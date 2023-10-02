@@ -77,6 +77,8 @@ class Agent(Entity):
         self.action = Action()
         # script behavior to execute
         self.action_callback = None
+        # current reward received
+        self.indiviual_reward = 0
 
 # multi-agent world
 class World(object):
