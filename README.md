@@ -43,7 +43,7 @@ Setup & Usage
 -------------
 
 1. Dependencies: Ensure you have all the necessary dependencies installed. (Provide a `requirements.txt` for ease.)
-2. Training: To train the agents, run `python train_v2.py`. Use argument --exp-name to keep track of your experiment Adjust the training parameters as required but the default parameters are the ones used in the paper.
+2. Training: To train the agents, cd into maddpg/experiments and run `python train_v2.py`. Use argument --exp-name to keep track of your experiment Adjust the training parameters as required but the default parameters are the ones used in the paper.
 3. Visualization: To visualize the behavior of the agents use --restore to load an already trained experiment and use --display to see the agent behaviors.
 
 
