@@ -10,7 +10,7 @@ This repository contains the Python implementation of our work on integrating 's
 Cite Us
 --------
 
-This work and the associated code are based on the paper 'Reward-Sharing Relational Networks in Multi-Agent Reinforcement Learning as a Framework for Emergent Behavior' by Hossein Haeri, Reza Ahmadzadeh, and Kshitij Jerath. If you find our work useful or use it in your research, please consider citing our paper:
+This work and the associated code are based on the paper 'Reward-Sharing Relational Networks in Multi-Agent Reinforcement Learning as a Framework for Emergent Behavior' by Hossein Haeri, Reza Ahmadzadeh, and Kshitij Jerath published in International Conference on Autonomous Agents and Multiagent Systems (AAMAS 2021) - Adaptive and Learning Agents Workshop (ALA). If you find our work useful or use it in your research, please consider citing our paper:
 
 https://arxiv.org/abs/2207.05886
 
