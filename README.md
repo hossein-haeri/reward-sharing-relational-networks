@@ -6,7 +6,7 @@ Introduction
 ------------
 
 This repository contains the Python implementation of our work on integrating 'social' interactions in Multi-Agent Reinforcement Learning (MARL) setups through a user-defined relational network. The study aims to understand the impact of agent-agent relations on emergent behaviors using the concept of Reward-Sharing Relational Networks (RSRN).
-
+<img src="rsrn_diagram.png" width="300"/>
 ![RSRN idea](rsrn_diagram.png)
 Cite Us
 --------
@@ -15,7 +15,7 @@ This work and the associated code are based on the paper 'Reward-Sharing Relatio
 
 https://arxiv.org/abs/2207.05886
 
-You can find more detail on the project website: https://sites.google.com/view/marl-rsrn
+You can find more details on the project website: https://sites.google.com/view/marl-rsrn
 https://drive.google.com/file/d/1LTxAY6wN31Quw7PeOfRqSNqlvunOlu0v/view?usp=sharing
 
 
