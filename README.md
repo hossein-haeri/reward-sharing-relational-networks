@@ -11,7 +11,9 @@ Abstract
 --------
 
 This work and the associated code are based on the paper 'Reward-Sharing Relational Networks in Multi-Agent Reinforcement Learning as a Framework for Emergent Behavior' by Hossein Haeri, Reza Ahmadzadeh, and Kshitij Jerath. If you find our work useful or use it in your research, please consider citing our paper:
+
 https://arxiv.org/abs/2207.05886
+
 You can find more detail on the project website: https://sites.google.com/view/marl-rsrn
 https://drive.google.com/file/d/1LTxAY6wN31Quw7PeOfRqSNqlvunOlu0v/view?usp=sharing
 
