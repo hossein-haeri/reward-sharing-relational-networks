@@ -1,6 +1,7 @@
 Reward-Sharing Relational Networks (RSRN) in Multi-Agent Reinforcement Learning (MARL)
 ======================================================================================
 
+
 Introduction
 ------------
 
@@ -9,7 +10,11 @@ This repository contains the Python implementation of our work on integrating 's
 Abstract
 --------
 
-In this work, we integrate ‘social’ interactions into the MARL setup through a user-defined relational network and examine the effects of agent-agent relations on the rise of emergent behaviors. By combining insights from sociology and neuroscience, our proposed framework models agent relationships using the notion of RSRN. In this context, network edge weights act as a metric indicating the degree to which one agent values the success of another. We construct relational rewards based on the RSRN interaction weights to train the multi-agent system collectively through a MARL algorithm. The system's efficacy is assessed in a 3-agent scenario under varied relational network structures. Our findings reveal that reward-sharing relational networks profoundly affect the learned behaviors, with the RSRN framework leading to emergent behaviors often reflecting the sociological understanding of such networks.
+This work and the associated code are based on the paper 'Reward-Sharing Relational Networks in Multi-Agent Reinforcement Learning as a Framework for Emergent Behavior' by Hossein Haeri, Reza Ahmadzadeh, and Kshitij Jerath. If you find our work useful or use it in your research, please consider citing our paper:
+https://arxiv.org/abs/2207.05886
+You can find more detail on the project website: https://sites.google.com/view/marl-rsrn
+https://drive.google.com/file/d/1LTxAY6wN31Quw7PeOfRqSNqlvunOlu0v/view?usp=sharing
+
 
 Simulation and Scenario
 -----------------------
@@ -36,27 +41,9 @@ Setup & Usage
 -------------
 
 1. Dependencies: Ensure you have all the necessary dependencies installed. (Provide a `requirements.txt` for ease.)
-2. Training: To train the agents, run `python train.py`. Adjust the training parameters as required.
-3. Evaluation: Once trained, evaluate the agent's performance with `python evaluate.py`.
-4. Visualization: Visual results are depicted in Figure 1 (Ensure there's a link or the image is embedded).
+2. Training: To train the agents, run `python train_v2.py`. Use argument --exp-name to keep track of your experiment Adjust the training parameters as required but the default parameters are the ones used in the paper.
+3. Visualization: To visualize the behavior of the agents use --restore to load an already trained experiment and use --display to see the agent behaviors.
 
-Conclusion & Future Work
-------------------------
 
-Our research underscores the profound influence of reward-sharing relational networks on emergent behaviors in MARL settings. The RSRN framework offers a platform where various relational networks yield distinct emergent behaviors, closely mirroring our sociological understanding of these networks.
 
-Citing our Work
----------------
-
-If you find our work useful or use it in your research, please consider citing our paper. (Provide a BibTeX citation or the relevant paper details.)
-
-Feedback & Contributions
-------------------------
-
-We welcome feedback, issues, and pull requests. Feel free to reach out for any queries or suggestions.
-
-License
--------
-
-This project is licensed under the MIT License.
 
