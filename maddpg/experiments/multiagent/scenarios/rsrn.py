@@ -19,11 +19,19 @@ class Scenario(BaseScenario):
             agent.collide = True
             agent.silent = True
             agent.size = 0.15
+            if i == 0:
+                # make color blue for agent 0
+                agent.color = np.array([0.35, 0.35, 0.85])
+            elif i == 1:
+                # make color red for agent 1
+                agent.color = np.array([0.85, 0.35, 0.35])
             # limit speed for agent 2
-            if i == 2:
-                agent.max_speed = 0.05
+            elif i == 2:
+                agent.max_speed = 0.02
                 # make color yelow for agent 2
                 agent.color = np.array([0.85, 0.85, 0.35])
+            else:
+                raise ValueError("agent number not defined!")
     
         # add landmarks
         world.landmarks = [Landmark() for i in range(num_landmarks)]
@@ -37,8 +45,8 @@ class Scenario(BaseScenario):
 
     def reset_world(self, world):
         # random properties for agents
-        for i, agent in enumerate(world.agents):
-            agent.color = np.array([0.35, 0.35, 0.85])
+        # for i, agent in enumerate(world.agents):
+        #     agent.color = np.array([0.35, 0.35, 0.85])
         # random properties for landmarks
         for i, landmark in enumerate(world.landmarks):
             landmark.color = np.array([0.25, 0.25, 0.25])
@@ -66,17 +74,17 @@ class Scenario(BaseScenario):
         collisions = 0
         occupied_landmarks = 0
         min_dists = 0
-        for l in world.landmarks:
-            dists = [np.sqrt(np.sum(np.square(a.state.p_pos - l.state.p_pos))) for a in world.agents]
-            min_dists += min(dists)
-            rew -= min(dists)
-            if min(dists) < 0.1:
-                occupied_landmarks += 1
-        if agent.collide:
-            for a in world.agents:
-                if self.is_collision(a, agent):
-                    rew -= 1
-                    collisions += 1
+        # for l in world.landmarks:
+        #     dists = [np.sqrt(np.sum(np.square(a.state.p_pos - l.state.p_pos))) for a in world.agents]
+        #     min_dists += min(dists)
+        #     rew -= min(dists)
+        #     if min(dists) < 0.1:
+        #         occupied_landmarks += 1
+        # if agent.collide:
+        #     for a in world.agents:
+        #         if self.is_collision(a, agent):
+        #             rew -= 1
+        #             collisions += 1
         return (rew, collisions, min_dists, occupied_landmarks)
 
 
@@ -97,15 +105,14 @@ class Scenario(BaseScenario):
         # A = np.zeros((3,3))
         
         # # self-interested RSRN
-        # A = [[1, 0, 0], 
-        #      [0, 1, 0], 
-        #      [0, 0, 1]]
-        
+        # A =np.array([[1, 0, 0],
+        #              [0, 1, 0],
+        #              [0, 0, 1]])
 
         # # fully cooperative RSRN
-        # A = [[1, 1, 1],
-        #      [1, 1, 1],
-        #      [1, 1, 1]]
+        # A = np.array(  [[1, 1, 1],
+        #                 [1, 1, 1],
+        #                 [1, 1, 1]])
 
         # authoritarian RSRN (agent 2 is the leader)
         A = np.array([[1, 0, 1],
@@ -113,27 +120,28 @@ class Scenario(BaseScenario):
                       [0, 0, 1]])
 
         # # collapsed authoritarian RSRN (agent 2 is the leader)
-        # A = [[0, 0, 1],
-        #      [0, 0, 1],
-        #      [0, 0, 1]]
+        # A = np.array([  [0, 0, 1],
+        #                 [0, 1, 0],
+        #                 [0, 0, 1]])
 
-
-
-        # calculate individual reward for each agent
-        # find the closest landmark to agent
-        dist = min([np.sqrt(np.sum(np.square(l.state.p_pos - agent.state.p_pos))) for l in world.landmarks])
-        # reward agent for reaching any landmark with d < 0.1 with reward exp(-dist^2)/sigma^2
-        indiviual_reward = 0
-        if dist < 0.2:
-                indiviual_reward = np.exp(-dist**2/0.1)
-        agent.indiviual_reward = indiviual_reward
+        if agent.id == 0:
+            for agnt in world.agents:
+                # calculate individual reward for each agent
+                # find the closest landmark to agent
+                dist = min([np.sqrt(np.sum(np.square(l.state.p_pos - agnt.state.p_pos))) for l in world.landmarks])
+                # reward agent for reaching any landmark with d < 0.1 with reward exp(-dist^2)/sigma^2
+                agnt.indiviual_reward = 0.1
+                if dist < 0.2:
+                        agnt.indiviual_reward += np.exp(-dist**2/0.1)
+                # else:
+                #     agnt.indiviual_reward = 0
 
         
 
         # construct a shared reward as rew_shared as a function of weighted product of the individual rewards already calculated (rew)
         rew_shared = 1
         for a in world.agents:
-            rew_shared = rew_shared * a.indiviual_reward ** A[agent.id, a.id]
+            rew_shared = rew_shared * (a.indiviual_reward ** A[agent.id, a.id])
 
 
 
