@@ -25,7 +25,7 @@ https://drive.google.com/file/d/1LTxAY6wN31Quw7PeOfRqSNqlvunOlu0v/view?usp=shari
 Simulation and Scenario
 -----------------------
 
-We leverage the Multi-agent Particle Environment (MPE) for simulating an RSRN in a 3-agent MARL environment. The agents' performance under different network structures is evaluated in this setting.
+We leverage the OpenAI's Multi-agent Particle Environment (MPE) for simulating an RSRN in a 3-agent MARL environment and also used OpenAI's MADDPG to train the agents. The agents' performance under different network structures is evaluated in this setting.
 
 Environment Details:
 
