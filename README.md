@@ -44,7 +44,7 @@ Scenario Description:
 Three agents aim to reach three unlabeled landmarks. Rewards are given upon reaching any landmark. This design makes the multi-agent environment intricate, thereby providing ample opportunities for emergent behaviors.
 
 <div align="center">
-    <img src="RSRN_Demo.gif" width="500"/>
+    <img src="RSRN_Demo.gif" width="800"/>
 </div>
 
 
