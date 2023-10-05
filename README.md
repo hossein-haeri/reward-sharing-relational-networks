@@ -7,6 +7,7 @@ Introduction
 
 This repository contains the Python implementation of our work on integrating 'social' interactions in Multi-Agent Reinforcement Learning (MARL) setups through a user-defined relational network. The study aims to understand the impact of agent-agent relations on emergent behaviors using the concept of Reward-Sharing Relational Networks (RSRN).
 
+![RSRN idea](rsrn_diagram.png)
 Cite Us
 --------
 
@@ -38,6 +39,8 @@ Environment Details:
 Scenario Description:
 
 Three agents aim to reach three unlabeled landmarks. Rewards are given upon reaching any landmark. This design makes the multi-agent environment intricate, thereby providing ample opportunities for emergent behaviors.
+
+![Demo Video](RSRN_Demo.gif)
 
 Setup & Usage
 -------------
