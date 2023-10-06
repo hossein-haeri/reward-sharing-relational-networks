@@ -40,6 +40,8 @@ class Entity(object):
         self.color = None
         # max speed and accel
         self.max_speed = None
+        # max action force (used to limit accelerations in RSRN experiment)
+        self.max_action_force = None
         self.accel = None
         # state
         self.state = EntityState()
@@ -138,7 +140,13 @@ class World(object):
         for i,agent in enumerate(self.agents):
             if agent.movable:
                 noise = np.random.randn(*agent.action.u.shape) * agent.u_noise if agent.u_noise else 0.0
-                p_force[i] = agent.action.u + noise                
+                p_force[i] = agent.action.u + noise
+
+
+            if agent.max_action_force is not None:
+                action_force_magitude = np.sqrt(np.square(p_force[i][0]) + np.square(p_force[i][1]))
+                if action_force_magitude > agent.max_action_force:
+                    p_force[i] = p_force[i] / action_force_magitude * agent.max_action_force               
         return p_force
 
     # gather physical forces acting on entities

@@ -27,7 +27,7 @@ class Scenario(BaseScenario):
                 agent.color = np.array([0.85, 0.35, 0.35])
             # limit speed for agent 2
             elif i == 2:
-                agent.max_speed = 0.02
+                agent.max_action_force = 0.01
                 # make color yelow for agent 2
                 agent.color = np.array([0.85, 0.85, 0.35])
             else:
@@ -109,15 +109,15 @@ class Scenario(BaseScenario):
         #              [0, 1, 0],
         #              [0, 0, 1]])
 
-        # # fully cooperative RSRN
-        # A = np.array(  [[1, 1, 1],
-        #                 [1, 1, 1],
-        #                 [1, 1, 1]])
+        # fully cooperative RSRN
+        A = np.array(  [[1, 1, 1],
+                        [1, 1, 1],
+                        [1, 1, 1]])
 
-        # authoritarian RSRN (agent 2 is the leader)
-        A = np.array([[1, 0, 1],
-                      [0, 1, 1],
-                      [0, 0, 1]])
+        # # authoritarian RSRN (agent 2 is the leader)
+        # A = np.array([[1, 0, 1],
+        #               [0, 1, 1],
+        #               [0, 0, 1]])
 
         # # collapsed authoritarian RSRN (agent 2 is the leader)
         # A = np.array([  [0, 0, 1],
@@ -130,9 +130,9 @@ class Scenario(BaseScenario):
                 # find the closest landmark to agent
                 dist = min([np.sqrt(np.sum(np.square(l.state.p_pos - agnt.state.p_pos))) for l in world.landmarks])
                 # reward agent for reaching any landmark with d < 0.1 with reward exp(-dist^2)/sigma^2
-                agnt.indiviual_reward = 0.1
+                agnt.indiviual_reward = 0.0
                 if dist < 0.2:
-                        agnt.indiviual_reward += np.exp(-dist**2/0.1)
+                        agnt.indiviual_reward = agnt.indiviual_reward + np.exp(-dist**2/0.1)
                 # else:
                 #     agnt.indiviual_reward = 0
 
