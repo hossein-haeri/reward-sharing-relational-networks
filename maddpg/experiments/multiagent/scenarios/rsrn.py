@@ -27,7 +27,7 @@ class Scenario(BaseScenario):
                 agent.color = np.array([0.85, 0.35, 0.35])
             # limit speed for agent 2
             elif i == 2:
-                agent.max_action_force = 0.01
+                agent.max_action_force = 0.1
                 # make color yelow for agent 2
                 agent.color = np.array([0.85, 0.85, 0.35])
             else:
@@ -128,9 +128,10 @@ class Scenario(BaseScenario):
             for agnt in world.agents:
                 # calculate individual reward for each agent
                 # find the closest landmark to agent
-                dist = min([np.sqrt(np.sum(np.square(l.state.p_pos - agnt.state.p_pos))) for l in world.landmarks])
+                # dist = min([np.sqrt(np.sum(np.square(l.state.p_pos - agnt.state.p_pos))) for l in world.landmarks])
+                dist = min([np.linalg.norm(l.state.p_pos - agnt.state.p_pos) for l in world.landmarks])
                 # reward agent for reaching any landmark with d < 0.1 with reward exp(-dist^2)/sigma^2
-                agnt.indiviual_reward = 0.0
+                agnt.indiviual_reward = 0.1
                 if dist < 0.2:
                         agnt.indiviual_reward = agnt.indiviual_reward + np.exp(-dist**2/0.1)
                 # else:
@@ -150,7 +151,7 @@ class Scenario(BaseScenario):
         # if agent.collide:
         #     for a in world.agents:
         #         if self.is_collision(a, agent):
-        #             rew -= 1
+        #             rew -= .1
         return rew_shared
 
     def observation(self, agent, world):
@@ -169,5 +170,5 @@ class Scenario(BaseScenario):
             if other is agent: continue
             comm.append(other.state.c)
             other_pos.append(other.state.p_pos - agent.state.p_pos)
-        # return np.concatenate([agent.state.p_vel] + [agent.state.p_pos] + entity_pos + other_pos + comm)
-        return np.concatenate([agent.state.p_vel] + [agent.state.p_pos] + other_pos)
+        return np.concatenate([agent.state.p_vel] + [agent.state.p_pos] + entity_pos + other_pos + comm)
+        # return np.concatenate([agent.state.p_vel] + [agent.state.p_pos] + other_pos)

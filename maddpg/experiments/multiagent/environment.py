@@ -77,7 +77,7 @@ class MultiAgentEnv(gym.Env):
             self.viewers = [None] * self.n
         self._reset_render()
 
-    def step(self, action_n):
+    def step(self, action_n, episode_step):
         obs_n = []
         reward_n = []
         done_n = []
