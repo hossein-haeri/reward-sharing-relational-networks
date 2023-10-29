@@ -1,0 +1,27 @@
+{
+    "git": {
+        "commit": "88e0d63e979441c2850357fd9b567cec3f72b124",
+        "remote": "https://github.com/hossein-haeri/reward-sharing-relational-networks.git"
+    },
+    "cuda": null,
+    "host": "UMASS-3K663W2",
+    "gpu": "Quadro P2000",
+    "username": "Hossein_Haeri",
+    "args": [
+        "--exp-name",
+        "fully-connected_03"
+    ],
+    "startedAt": "2023-10-28T18:46:33.057794",
+    "cpu_count": 12,
+    "state": "running",
+    "email": "46456383+hossein-haeri@users.noreply.github.com",
+    "docker": null,
+    "heartbeatAt": "2023-10-28T18:46:38.901849",
+    "program": "train_v0.py",
+    "codePath": "maddpg\\experiments\\train_v0.py",
+    "python": "3.5.4",
+    "root": "C:/Users/Hossein_Haeri/reward-sharing-relational-networks",
+    "executable": "C:\\Users\\Hossein_Haeri\\reward-sharing-relational-networks\\venv\\Scripts\\python.exe",
+    "os": "Windows-10-10.0.19041-SP0",
+    "gpu_count": 1
+}
