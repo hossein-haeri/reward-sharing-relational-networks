@@ -184,11 +184,11 @@ class Scenario(BaseScenario):
 
         if rew_type == 'push' and test == 0:
             if agent.name == 'agent 1':
-                network = np.array([1, 1, 1])
+                network = np.array([1, 0, 1])
             if agent.name == 'agent 2':
-                network = np.array([1, 1, 1])
+                network = np.array([0, 1, 1])
             if agent.name == 'agent 3':
-                network = np.array([1, 1, 1])
+                network = np.array([0, 0, 1])
 
         ### Centeralized Reward
         # for l in world.landmarks:

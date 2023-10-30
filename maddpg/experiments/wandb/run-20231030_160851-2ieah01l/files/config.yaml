@@ -1,0 +1,54 @@
+wandb_version: 1
+
+_wandb:
+  desc: null
+  value:
+    cli_version: 0.11.2
+    framework: tensorflow
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    python_version: 3.5.4
+    t:
+      1:
+      - 3
+      4: 3.5.4
+      5: 0.11.2
+      8:
+      - 3
+      - 5
+adv_policy:
+  desc: null
+  value: maddpg
+batch_size:
+  desc: null
+  value: 2048
+exp_name:
+  desc: null
+  value: athoritarian_10
+gamma:
+  desc: null
+  value: 0.95
+good_policy:
+  desc: null
+  value: maddpg
+learning_rate:
+  desc: null
+  value: 0.01
+max_episode_len:
+  desc: null
+  value: 70
+network:
+  desc: null
+  value: authoritarian
+num_episodes:
+  desc: null
+  value: 500000
+num_units:
+  desc: null
+  value: 64
+save_dir:
+  desc: null
+  value: ./saved_policy/athoritarian_10/
+save_rate:
+  desc: null
+  value: 1000
