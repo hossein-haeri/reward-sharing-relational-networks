@@ -1,0 +1,44 @@
+sudo apt update
+sudo apt upgrade
+
+
+sudo apt-get install -y build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev wget
+
+
+sudo apt-get install -y build-essential libssl-dev zlib1g-dev libbz2-dev \
+libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev \
+xz-utils tk-dev libffi-dev liblzma-dev python3-openssl git
+
+
+curl https://pyenv.run | bash
+
+export PATH="$HOME/.pyenv/bin:$PATH"
+eval "$(pyenv init --path)"
+eval "$(pyenv virtualenv-init -)"
+
+
+source ~/.bashrc
+pyenv install 3.5.4
+pyenv global 3.5.4
+
+
+pip install numpy==1.14.5
+pip install protobuf==3.6.1
+pip install tensorflow==1.8.0
+pip install gym==0.10.5
+
+
+pip install wandb --no-deps
+pip install configparser PyYAML promise GitPython python-dateutil subprocess32 pathtools requests shortuuid sentry-sdk Click docker-pycreds psutil six urllib3
+
+
+
+
+pip install pandas
+pip install matplotlib
+
+git clone https://github.com/hossein-haeri/reward-sharing-relational-networks.git
+
+cd ~/reward-sharing-relational-networks/maddpg
+
+pip install -e .
