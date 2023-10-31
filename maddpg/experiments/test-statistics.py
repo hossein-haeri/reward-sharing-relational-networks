@@ -173,8 +173,8 @@ def train(arglist):
         t_start = time.time()
         # agent locs, landmark locs, rewards
         len_stats = 2 + 6 + 6 + 3
-        trajectory = np.zeros((arglist.max_episode_len*arglist.num_episodes, len_stats))
-
+        episode_trajectory = []
+        trajectories = []
         print('Starting iterations...')
         while arglist.num_episodes > episode_counter:
             # get action
@@ -204,14 +204,15 @@ def train(arglist):
             for agent in env.world.agents:
                 row.append(agent.state.p_pos[0])
                 row.append(agent.state.p_pos[1])
-            
             for landmark in env.world.landmarks:
                 row.append(landmark.state.p_pos[0])
                 row.append(landmark.state.p_pos[1])
             row.append(rew_n[0])
             row.append(rew_n[1])
             row.append(rew_n[2])
-            trajectory[episode_counter, :] = np.array(row)
+            episode_trajectory.append(row)
+            # print(np.array(row))
+            # trajectory[episode_counter, :] = np.array(row)
 
 
 
@@ -219,10 +220,10 @@ def train(arglist):
 
                 # pickle episode_trajectory into a pickle object
                 # pickle.dump(trajectory, "./test_policy/" + arglist.exp_name + '/test_trajectory.pkl', 'wb')
-                with open("./test_policy/" + arglist.exp_name + '/test_trajectory.pkl', 'wb') as file:
-                    pickle.dump(trajectory, file)
+                trajectories.append(episode_trajectory)
+                
                 # trajectory = np.zeros(arglist.max_episode_len, len_stats)
-
+                episode_trajectory = []
                 obs_n = env.reset()
                 episode_step = 0
                 episode_counter += 1
@@ -281,6 +282,8 @@ def train(arglist):
             if terminal and (episode_counter % arglist.save_rate == 0):
                 U.save_state(arglist.save_dir, saver=saver)
                 
+                with open("./test_policy/" + arglist.exp_name + '/test_trajectory.pkl', 'wb') as file:
+                    pickle.dump(trajectories, file)
                 
                 mean_rewards = [np.mean(rew[-arglist.save_rate:]) for rew in agent_rewards]
                 print("episodes: {}, agent episode reward: {}, time: {}".format(
