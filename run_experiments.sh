@@ -1,5 +1,5 @@
 #!/bin/bash
-
+cd maddpg/experiments/
 python train_v0.py --exp-name Tribal_01 &   # The & at the end will run the script in the background
 python train_v0.py --exp-name Tribal_02 &
 python train_v0.py --exp-name Tribal_03 &
