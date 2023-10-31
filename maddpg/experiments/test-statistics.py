@@ -20,7 +20,7 @@ def parse_args():
     # Environment
     parser.add_argument("--scenario", type=str, default="rsrn_original", help="name of the scenario script")
     parser.add_argument("--max-episode-len", type=int, default=70, help="maximum episode length")
-    parser.add_argument("--num-episodes", type=int, default=500000, help="number of episodes")
+    parser.add_argument("--num-episodes", type=int, default=1000, help="number of episodes")
     parser.add_argument("--num-adversaries", type=int, default=0, help="number of adversaries")
     parser.add_argument("--good-policy", type=str, default="maddpg", help="policy for good agents")
     parser.add_argument("--adv-policy", type=str, default="maddpg", help="policy of adversaries")
@@ -33,7 +33,7 @@ def parse_args():
     # Checkpointing
     parser.add_argument("--exp-name", type=str, default="", help="name of the experiment")
     parser.add_argument("--save-dir", type=str, default="./test_policy/", help="directory in which training state and model should be saved")
-    parser.add_argument("--save-rate", type=int, default=1000, help="save model once every time this many episodes are completed")
+    parser.add_argument("--save-rate", type=int, default=100, help="save model once every time this many episodes are completed")
     parser.add_argument("--load-dir", type=str, default="./saved_policy/", help="directory in which training state and model are loaded")
     # Evaluation
     parser.add_argument("--restore", action="store_true", default=True)
@@ -218,7 +218,7 @@ def train(arglist):
             if done or terminal:
 
                 # pickle episode_trajectory into a pickle object
-                pickle.dump(trajectory, "./test_policy/" + arglist.exp_name + '/test_trajectory.pkl', 'wb'))
+                pickle.dump(trajectory, "./test_policy/" + arglist.exp_name + '/test_trajectory.pkl', 'wb')
                 
                 # trajectory = np.zeros(arglist.max_episode_len, len_stats)
 
