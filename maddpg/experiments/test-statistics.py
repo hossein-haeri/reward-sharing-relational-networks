@@ -218,8 +218,9 @@ def train(arglist):
             if done or terminal:
 
                 # pickle episode_trajectory into a pickle object
-                pickle.dump(trajectory, "./test_policy/" + arglist.exp_name + '/test_trajectory.pkl', 'wb')
-                
+                # pickle.dump(trajectory, "./test_policy/" + arglist.exp_name + '/test_trajectory.pkl', 'wb')
+                with open("./test_policy/" + arglist.exp_name + '/test_trajectory.pkl', 'wb') as file:
+                    pickle.dump(trajectory, file)
                 # trajectory = np.zeros(arglist.max_episode_len, len_stats)
 
                 obs_n = env.reset()
@@ -320,7 +321,7 @@ def train(arglist):
             #     print('...Finished total of {} episodes.'.format(len(episode_rewards)))
             #     # filewriter.writerow(agent_rewards)
             #     break
-            print('Test finished!')
+        print('Test finished!')
 
 if __name__ == '__main__':
     arglist = parse_args()
@@ -355,4 +356,4 @@ if __name__ == '__main__':
     train(arglist)
     wandb.finish()
 
-    plt.show()
+    # plt.show()
