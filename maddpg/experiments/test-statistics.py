@@ -325,7 +325,7 @@ def train(arglist):
 if __name__ == '__main__':
     arglist = parse_args()
     arglist.save_dir = "./test_policy/" + arglist.exp_name + "/"
-    save all arguments to csv file in a new directory (arglist.save_dir)
+    # save all arguments to csv file in a new directory (arglist.save_dir)
     if not os.path.exists(arglist.save_dir):
         os.makedirs(arglist.save_dir)
     with open(arglist.save_dir+'hyperparams.txt', 'w', newline='') as csvfile:
