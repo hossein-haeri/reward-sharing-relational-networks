@@ -284,8 +284,9 @@ def train(arglist):
                 
                 mean_rewards = [np.mean(rew[-arglist.save_rate:]) for rew in agent_rewards]
                 print("episodes: {}, agent episode reward: {}, time: {}".format(
-                    episode_counter, np.mean(episode_rewards[-arglist.save_rate:]),
-                    mean_rewards, round(time.time()-t_start, 3)))
+                    episode_counter,
+                    mean_rewards,
+                    round(time.time()-t_start, 3)))
                 t_start = time.time()
                 
 
