@@ -176,7 +176,7 @@ def train(arglist):
         episode_trajectory = np.zeros((arglist.max_episode_len, len_stats))
 
         print('Starting iterations...')
-        while arg.list.num_episodes > episode_counter:
+        while arglist.num_episodes > episode_counter:
             # get action
             action_n = [agent.action(obs) for agent, obs in zip(trainers,obs_n)]
             # environment step
