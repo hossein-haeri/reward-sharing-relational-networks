@@ -32,12 +32,12 @@ def parse_args():
     parser.add_argument("--num-units", type=int, default=64, help="number of units in the mlp")
     # Checkpointing
     parser.add_argument("--exp-name", type=str, default="", help="name of the experiment")
-    parser.add_argument("--save-dir", type=str, default="./saved_policy/", help="directory in which training state and model should be saved")
+    parser.add_argument("--save-dir", type=str, default="./test_policy/", help="directory in which training state and model should be saved")
     parser.add_argument("--save-rate", type=int, default=1000, help="save model once every time this many episodes are completed")
     parser.add_argument("--load-dir", type=str, default="./saved_policy/", help="directory in which training state and model are loaded")
     # Evaluation
     parser.add_argument("--restore", action="store_true", default=True)
-    parser.add_argument("--display", action="store_true", default=True)
+    parser.add_argument("--display", action="store_true", default=False)
     parser.add_argument("--benchmark", action="store_true", default=False)
     parser.add_argument("--benchmark-iters", type=int, default=100000, help="number of iterations run for benchmarking")
     parser.add_argument("--benchmark-dir", type=str, default="./benchmark_files/", help="directory where benchmark data is saved")
@@ -139,8 +139,7 @@ def plot_rewards(agent_rewards, average_window,title):
     plt.pause(0.0000001)
 
 def train(arglist):
-    # csvfile = open('test.csv', 'w', newline='')
-    # filewriter = csv.writer(csvfile, delimiter=' ')
+
 
     with U.single_threaded_session():
         # Create environment
@@ -161,7 +160,7 @@ def train(arglist):
             print('Loading previous state...')
             U.load_state(arglist.load_dir)
 
-        episode_rewards = [0.0]  # sum of rewards for all agents
+        # episode_rewards = [0.0]  # sum of rewards for all agents
         agent_rewards = [[0.0] for _ in range(env.n)]  # individual agent reward
         final_ep_rewards = []  # sum of rewards for training curve
         final_ep_ag_rewards = []  # agent rewards for training curve
@@ -170,16 +169,21 @@ def train(arglist):
         obs_n = env.reset()
         episode_step = 0
         train_step = 0
+        episode_counter = 0
         t_start = time.time()
+        # agent locs, landmark locs, rewards
+        len_stats = 6 + 6 + 3
+        episode_trajectory = np.zeros(arglist.max_episode_len, len_stats)
 
         print('Starting iterations...')
-        while True:
+        while arg.list.num_episodes > episode_counter:
             # get action
             action_n = [agent.action(obs) for agent, obs in zip(trainers,obs_n)]
             # environment step
             new_obs_n, rew_n, done_n, info_n = env.step(action_n,episode_step)
 
             episode_step += 1
+            
             done = all(done_n)
             terminal = (episode_step >= arglist.max_episode_len)
             # collect experience
@@ -188,14 +192,43 @@ def train(arglist):
             obs_n = new_obs_n
 
             for i, rew in enumerate(rew_n):
-                episode_rewards[-1] += rew
+                # episode_rewards[-1] += rew
                 agent_rewards[i][-1] += rew
 
 
+
+
+            row = []
+            row.append(episode_counter)
+            row.append(episode_step)
+            for agent in env.world.agents:
+                row.append(agent.state.p_pos[0])
+                row.append(agent.state.p_pos[1])
+            
+            for landmark in env.world.landmarks:
+                row.append(landmark.state.p_pos[0])
+                row.append(landmark.state.p_pos[1])
+            row.append(rew_n[0])
+            row.append(rew_n[1])
+            row.append(rew_n[2])
+            trajectory[episode_counter-1, :] = np.array(row)
+
+
+
             if done or terminal:
+
+                # pickle episode_trajectory into a pickle object
+                pickle.dump(trajectory, "./test_policy/" + arglist.exp_name + '/test_trajectory.pkl', 'wb'))
+                
+                # trajectory = np.zeros(arglist.max_episode_len, len_stats)
+
                 obs_n = env.reset()
                 episode_step = 0
-                episode_rewards.append(0)
+                episode_counter += 1
+
+                
+
+                # episode_rewards.append(0)
                 env.world.disabled_agent_num = np.random.choice([0,1,2])
                 env.world.disabled_agent_num = 2
                 for a in agent_rewards:
@@ -229,26 +262,36 @@ def train(arglist):
             # print(env.world.time)
 
             # update all trainers, if not in display or benchmark mode
-            loss = None
-            for agent in trainers:
-                agent.preupdate()
-            for agent in trainers:
-                loss = agent.update(trainers, train_step)
+            # loss = None
+            # for agent in trainers:
+            #     agent.preupdate()
+            # for agent in trainers:
+            #     loss = agent.update(trainers, train_step)
+            # fill trajectory with location of agents (first 3) and landmarks (second 3), and rewards (third 3
+            # and bumps (last 3)
+            
+                
+
+
+
+
 
             # save model, display training output
-            if terminal and (len(episode_rewards) % arglist.save_rate == 0):
+            if terminal and (episode_counter % arglist.save_rate == 0):
                 U.save_state(arglist.save_dir, saver=saver)
-                # print statement depends on whether or not there are adversaries
-                if num_adversaries == 0 and False:
-                    print("steps: {}, episodes: {}, mean episode reward: {}, time: {}".format(
-                        train_step, len(episode_rewards), np.mean(episode_rewards[-arglist.save_rate:]), round(time.time()-t_start, 3)))
+                
+                
+                mean_rewards = [np.mean(rew[-arglist.save_rate:]) for rew in agent_rewards]
+                print("episodes: {}, agent episode reward: {}, time: {}".format(
+                    episode_counter, np.mean(episode_rewards[-arglist.save_rate:]),
+                    mean_rewards, round(time.time()-t_start, 3)))
+                t_start = time.time()
+                
 
-                else:
-                    mean_rewards = [np.mean(rew[-arglist.save_rate:]) for rew in agent_rewards]
-                    print("steps: {}, episodes: {}, mean episode reward: {}, agent episode reward: {}, time: {}".format(
-                        train_step, len(episode_rewards), np.mean(episode_rewards[-arglist.save_rate:]),
-                        mean_rewards, round(time.time()-t_start, 3)))
-                    t_start = time.time()
+
+                # with open("./test_policy/" + arglist.exp_name + "/trajectories/episode_"+str(episode_step)+".txt", 'a', newline='') as csvfile:
+                #     writer = csv.writer(csvfile)
+                #     writer.writerow(row)
                     # wandb.log({"agent 1": mean_rewards[0], "agent 2": mean_rewards[1], "agent 3": mean_rewards[2]})
                     # plot_rewards(agent_rewards, arglist.save_rate, arglist.exp_name)
                     # np.savetxt('rewards_'+str(arglist.exp_name)+'_'+str(datetime.date.today())+'.csv', np.asarray(agent_rewards).transpose())
@@ -277,17 +320,18 @@ def train(arglist):
             #     print('...Finished total of {} episodes.'.format(len(episode_rewards)))
             #     # filewriter.writerow(agent_rewards)
             #     break
+            print('Test finished!')
 
 if __name__ == '__main__':
     arglist = parse_args()
-    # arglist.save_dir = "./saved_policy/" + arglist.exp_name + "/"
-    # save all arguments to csv file in a new directory (arglist.save_dir)
-    # if not os.path.exists(arglist.save_dir):
-    #     os.makedirs(arglist.save_dir)
-    # with open(arglist.save_dir+'hyperparams.txt', 'w', newline='') as csvfile:
-    #     filewriter = csv.writer(csvfile, delimiter=':')
-    #     for key, value in vars(arglist).items():
-    #         filewriter.writerow([key, value])
+    arglist.save_dir = "./test_policy/" + arglist.exp_name + "/"
+    save all arguments to csv file in a new directory (arglist.save_dir)
+    if not os.path.exists(arglist.save_dir):
+        os.makedirs(arglist.save_dir)
+    with open(arglist.save_dir+'hyperparams.txt', 'w', newline='') as csvfile:
+        filewriter = csv.writer(csvfile, delimiter=':')
+        for key, value in vars(arglist).items():
+            filewriter.writerow([key, value])
     # print(arglist)
 
     # wandb.init(project='RSRN', entity='haeri-hsn', name=arglist.exp_name)
