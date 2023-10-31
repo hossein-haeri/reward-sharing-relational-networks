@@ -173,7 +173,7 @@ def train(arglist):
         t_start = time.time()
         # agent locs, landmark locs, rewards
         len_stats = 2 + 6 + 6 + 3
-        trajectory = np.zeros((arglist.max_episode_len, len_stats))
+        trajectory = np.zeros((arglist.max_episode_len*arglist.num_episodes, len_stats))
 
         print('Starting iterations...')
         while arglist.num_episodes > episode_counter:
