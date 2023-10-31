@@ -173,7 +173,7 @@ def train(arglist):
         t_start = time.time()
 
         print('Starting iterations...')
-        while True:
+        while len(episode_rewards) < arglist.num_episodes):
             # get action
             action_n = [agent.action(obs) for agent, obs in zip(trainers,obs_n)]
             # environment step

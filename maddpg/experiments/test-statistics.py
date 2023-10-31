@@ -199,7 +199,7 @@ def train(arglist):
 
 
             row = []
-            row.append(episode_counter)
+            row.append(episode_counter+1)
             row.append(episode_step)
             for agent in env.world.agents:
                 row.append(agent.state.p_pos[0])
@@ -211,7 +211,7 @@ def train(arglist):
             row.append(rew_n[0])
             row.append(rew_n[1])
             row.append(rew_n[2])
-            trajectory[episode_counter-1, :] = np.array(row)
+            trajectory[episode_counter, :] = np.array(row)
 
 
 
