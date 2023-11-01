@@ -161,19 +161,21 @@ def train(arglist):
             print('Loading previous state...')
             U.load_state(arglist.load_dir)
 
-        episode_rewards = [0.0]  # sum of rewards for all agents
-        agent_rewards = [[0.0] for _ in range(env.n)]  # individual agent reward
+        # episode_rewards = [0.0]  # sum of rewards for all agents
+        # agent_rewards = [[0.0] for _ in range(env.n)]  # individual agent reward
+        agent_rewards = np.zeros((arglist.num_episodes, env.n))
         final_ep_rewards = []  # sum of rewards for training curve
         final_ep_ag_rewards = []  # agent rewards for training curve
-        agent_info = [[[]]]  # placeholder for benchmarking info
+        # agent_info = [[[]]]  # placeholder for benchmarking info
         saver = tf.train.Saver()
         obs_n = env.reset()
         episode_step = 0
         train_step = 0
         t_start = time.time()
-
+        episode_count = 0
         print('Starting iterations...')
-        while len(episode_rewards) < arglist.num_episodes:
+        while episode_count < arglist.num_episodes:
+            
             # get action
             action_n = [agent.action(obs) for agent, obs in zip(trainers,obs_n)]
             # environment step
@@ -188,35 +190,18 @@ def train(arglist):
             obs_n = new_obs_n
 
             for i, rew in enumerate(rew_n):
-                episode_rewards[-1] += rew
-                agent_rewards[i][-1] += rew
+                # episode_rewards[-1] += rew
+                agent_rewards[episode_count, i] += rew
 
 
             if done or terminal:
                 obs_n = env.reset()
                 episode_step = 0
-                episode_rewards.append(0)
-                env.world.disabled_agent_num = np.random.choice([0,1,2])
-                env.world.disabled_agent_num = 2
-                for a in agent_rewards:
-                    a.append(0)
-                agent_info.append([[]])
+                episode_count += 1
+
 
             # increment global step counter
             train_step += 1
-            # env.time = episode_step
-            # print(env.time)
-            # for benchmarking learned policies
-            if arglist.benchmark:
-                for i, info in enumerate(info_n):
-                    agent_info[-1][i].append(info_n['n'])
-                if train_step > arglist.benchmark_iters and (done or terminal):
-                    file_name = arglist.benchmark_dir + arglist.exp_name + '.pkl'
-                    print('Finished benchmarking, now saving...')
-                    with open(file_name, 'wb') as fp:
-                        pickle.dump(agent_info[:-1], fp)
-                    break
-                continue
 
             # for displaying learned policies
             if arglist.display:
@@ -224,9 +209,8 @@ def train(arglist):
                 env.render()
                 continue
 
-            # for agent in env.entites:
             env.world.time = episode_step
-            # print(env.world.time)
+
 
             # update all trainers, if not in display or benchmark mode
             loss = None
@@ -236,31 +220,34 @@ def train(arglist):
                 loss = agent.update(trainers, train_step)
 
             # save model, display training output
-            if terminal and (len(episode_rewards) % arglist.save_rate == 0):
+            if terminal and (episode_count % arglist.save_rate == 0):
                 U.save_state(arglist.save_dir, saver=saver)
-                # print statement depends on whether or not there are adversaries
-                if num_adversaries == 0 and False:
-                    print("steps: {}, episodes: {}, mean episode reward: {}, time: {}".format(
-                        train_step, len(episode_rewards), np.mean(episode_rewards[-arglist.save_rate:]), round(time.time()-t_start, 3)))
 
-                else:
-                    mean_rewards = [np.mean(rew[-arglist.save_rate:]) for rew in agent_rewards]
-                    wandb.log({"agent 1": mean_rewards[0], "agent 2": mean_rewards[1], "agent 3": mean_rewards[2]})
-                    # plot_rewards(agent_rewards, arglist.save_rate, arglist.exp_name)
-                    # np.savetxt('rewards_'+str(arglist.exp_name)+'_'+str(datetime.date.today())+'.csv', np.asarray(agent_rewards).transpose())
-                    # np.savetxt(str(arglist.exp_name)+'_rewards'+'.csv', np.asarray(agent_rewards).transpose())
-                    # print(agent_rewards)
+                # mean_rewards = [np.mean(rew[-arglist.save_rate:]) for rew in agent_rewards]
+                # wandb.log({"agent 1": mean_rewards[0], "agent 2": mean_rewards[1], "agent 3": mean_rewards[2]})
 
-                    # convert agent_reward to pd dataframe and save to csv where each agent i has a column of rewards
-                    agent_rewards_np = np.asarray(agent_rewards)
-                    agent_rewards_np = agent_rewards_np.T
-                    agent_rewards_np = pd.DataFrame(agent_rewards_np)
-                    pickle.dump(agent_rewards_np, open(str(arglist.save_dir)+'rewards.pkl', 'wb'))
-                    
-                    print("steps: {}, episodes: {}, mean episode reward: {}, agent episode reward: {}, time: {}".format(
-                        train_step, len(episode_rewards), np.mean(episode_rewards[-arglist.save_rate:]),
-                        mean_rewards, round(time.time()-t_start, 3)))
-                    t_start = time.time()
+                # mean_rewards = [np.mean(rew[-arglist.save_rate:]) for rew in agent_rewards]
+                roll_mean_rewards = np.mean(agent_rewards[episode_count-arglist.save_rate:episode_count,:], axis=0)
+                wandb.log({ "agent 1": roll_mean_rewards[0],
+                            "agent 2": roll_mean_rewards[1],
+                            "agent 3": roll_mean_rewards[2]})
+
+                # plot_rewards(agent_rewards, arglist.save_rate, arglist.exp_name)
+                # np.savetxt('rewards_'+str(arglist.exp_name)+'_'+str(datetime.date.today())+'.csv', np.asarray(agent_rewards).transpose())
+                # np.savetxt(str(arglist.exp_name)+'_rewards'+'.csv', np.asarray(agent_rewards).transpose())
+                # print(agent_rewards)
+
+                # convert agent_reward to pd dataframe and save to csv where each agent i has a column of rewards
+                # agent_rewards_np = np.asarray(agent_rewards)
+                # agent_rewards_np = agent_rewards_np.T
+                # agent_rewards_np = pd.DataFrame(agent_rewards_np)
+                pickle.dump(agent_rewards, open(str(arglist.save_dir)+'rewards.pkl', 'wb'))
+                
+                print("episodes: {}, agent episode reward: {}, time: {}".format(
+                    episode_count,
+                    roll_mean_rewards,
+                    round(time.time()-t_start, 3)))
+                t_start = time.time()
                 # # Keep track of final episode reward
                 # final_ep_rewards.append(np.mean(episode_rewards[-arglist.save_rate:]))
                 # for rew in agent_rewards:
