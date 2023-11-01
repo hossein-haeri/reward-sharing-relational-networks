@@ -245,10 +245,6 @@ def train(arglist):
 
                 else:
                     mean_rewards = [np.mean(rew[-arglist.save_rate:]) for rew in agent_rewards]
-                    print("steps: {}, episodes: {}, mean episode reward: {}, agent episode reward: {}, time: {}".format(
-                        train_step, len(episode_rewards), np.mean(episode_rewards[-arglist.save_rate:]),
-                        mean_rewards, round(time.time()-t_start, 3)))
-                    t_start = time.time()
                     wandb.log({"agent 1": mean_rewards[0], "agent 2": mean_rewards[1], "agent 3": mean_rewards[2]})
                     # plot_rewards(agent_rewards, arglist.save_rate, arglist.exp_name)
                     # np.savetxt('rewards_'+str(arglist.exp_name)+'_'+str(datetime.date.today())+'.csv', np.asarray(agent_rewards).transpose())
@@ -260,7 +256,11 @@ def train(arglist):
                     agent_rewards_np = agent_rewards_np.T
                     agent_rewards_np = pd.DataFrame(agent_rewards_np)
                     pickle.dump(agent_rewards_np, open(str(arglist.save_dir)+'rewards.pkl', 'wb'))
-                
+                    
+                    print("steps: {}, episodes: {}, mean episode reward: {}, agent episode reward: {}, time: {}".format(
+                        train_step, len(episode_rewards), np.mean(episode_rewards[-arglist.save_rate:]),
+                        mean_rewards, round(time.time()-t_start, 3)))
+                    t_start = time.time()
                 # # Keep track of final episode reward
                 # final_ep_rewards.append(np.mean(episode_rewards[-arglist.save_rate:]))
                 # for rew in agent_rewards:
