@@ -236,7 +236,7 @@ class Scenario(BaseScenario):
                 dists = np.sqrt([np.sum(np.square(a.state.p_pos - l.state.p_pos)) for l in world.landmarks])
                 d = min(dists)
                 if d < 0.2 or True:
-                    landmark_vector.append(np.exp(-(d**2)/0.1))
+                    landmark_vector.append(max(np.exp(-(d**2)/0.1),0.01))
                     # landmark_vector.append(1)
                 else:
                     landmark_vector.append(np.array(0))

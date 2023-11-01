@@ -12,4 +12,6 @@ start python train_v0.py --exp-name fully-connected_07
 start python train_v0.py --exp-name fully-connected_08
 start python train_v0.py --exp-name fully-connected_09
 start python train_v0.py --exp-name fully-connected_10
+start python train_v0.py --exp-name fully-connected_11
+start python train_v0.py --exp-name fully-connected_12
 cmd /k
