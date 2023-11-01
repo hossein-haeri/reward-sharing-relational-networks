@@ -293,7 +293,8 @@ if __name__ == '__main__':
     wandb.init(project='RSRN', entity='haeri-hsn', name=arglist.exp_name)
 
     config = wandb.config
-    config.network = 'Tribal'
+    config.network = 'fully-connected'
+    config.boundary = '(-1,1)'
     config.learning_rate = arglist.lr
     config.gamma = arglist.gamma
     config.batch_size = arglist.batch_size
