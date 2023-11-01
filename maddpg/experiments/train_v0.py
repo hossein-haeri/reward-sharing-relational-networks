@@ -294,7 +294,7 @@ if __name__ == '__main__':
 
     config = wandb.config
     config.network = 'fully-connected'
-    config.boundary = '(-1,1)'
+    config.boundary = '(-2,2)'
     config.learning_rate = arglist.lr
     config.gamma = arglist.gamma
     config.batch_size = arglist.batch_size
