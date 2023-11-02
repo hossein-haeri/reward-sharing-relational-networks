@@ -63,13 +63,9 @@ class Scenario(BaseScenario):
 
             if agent.name == 'agent 2':
                 agent.color = np.array(RED) ## BLUE
-
-
-            if agent.name == 'agent 3':
-                agent.color = np.array(YELLOW) ## BLUE
-                # agent.initial_mass = 5
-                # agent.size = 0.4
                 agent.max_action_force = 0.1
+
+
 
 
 
