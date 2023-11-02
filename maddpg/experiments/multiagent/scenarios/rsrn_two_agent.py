@@ -69,7 +69,7 @@ class Scenario(BaseScenario):
                 agent.color = np.array(YELLOW) ## BLUE
                 # agent.initial_mass = 5
                 # agent.size = 0.4
-                # agent.max_action_force = 0.1
+                agent.max_action_force = 0.1
 
 
 
@@ -138,11 +138,6 @@ class Scenario(BaseScenario):
                 landmark.state.p_pos = np.array([r*np.cos((i)*(2*np.pi)/n), r*np.sin((i)*(2*np.pi)/n)])
 
 
-
-
-
-
-
     def benchmark_data(self, agent, world):
         rew = 0
         collisions = 0
@@ -184,11 +179,10 @@ class Scenario(BaseScenario):
 
         if rew_type == 'push' and test == 0:
             if agent.name == 'agent 1':
-                network = np.array([1, 1, 1])
+                network = np.array([1, 1])
             if agent.name == 'agent 2':
-                network = np.array([1, 1, 1])
-            if agent.name == 'agent 3':
-                network = np.array([1, 1, 1])
+                network = np.array([1, 1])
+
 
         ### Centeralized Reward
         # for l in world.landmarks:
@@ -236,10 +230,10 @@ class Scenario(BaseScenario):
                 dists = np.sqrt([np.sum(np.square(a.state.p_pos - l.state.p_pos)) for l in world.landmarks])
                 d = min(dists)
                 if d < 0.2 or True:
-                    landmark_vector.append(np.exp(-(d**2)/0.1))
+                    landmark_vector.append(max(np.exp(-(d**2)/0.1),0.01))
                     # landmark_vector.append(1)
                 else:
-                    landmark_vector.append(0)
+                    landmark_vector.append(np.array(0))
 
 
             if np.sum(network) != 0:
@@ -293,4 +287,3 @@ class Scenario(BaseScenario):
             # print(entity.name)
         return np.concatenate([agent.state.p_vel] + [agent.state.p_pos] + other_pos)
         # return np.concatenate([agent.state.p_vel] + [agent.state.p_pos] + entity_pos + other_pos + np.asarray(world.time) + np.asarray(world.disabled_agent_num))
- 
