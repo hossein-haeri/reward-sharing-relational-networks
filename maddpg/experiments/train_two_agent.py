@@ -20,7 +20,7 @@ def parse_args():
     # Environment
     parser.add_argument("--scenario", type=str, default="rsrn_two_agent", help="name of the scenario script")
     parser.add_argument("--max-episode-len", type=int, default=70, help="maximum episode length")
-    parser.add_argument("--num-episodes", type=int, default=500000, help="number of episodes")
+    parser.add_argument("--num-episodes", type=int, default=250000, help="number of episodes")
     parser.add_argument("--num-adversaries", type=int, default=0, help="number of adversaries")
     parser.add_argument("--good-policy", type=str, default="maddpg", help="policy for good agents")
     parser.add_argument("--adv-policy", type=str, default="maddpg", help="policy of adversaries")
