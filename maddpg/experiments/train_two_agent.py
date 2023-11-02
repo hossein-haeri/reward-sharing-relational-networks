@@ -283,7 +283,7 @@ if __name__ == '__main__':
     config.rsrn_type = 'WSM'
     config.num_agents = 2
     config.num_landmarks = 2
-    config.slow_agent = False
+    config.slow_agent = True
     config.boundary = '(-2,2)'
     config.learning_rate = arglist.lr
     config.gamma = arglist.gamma
