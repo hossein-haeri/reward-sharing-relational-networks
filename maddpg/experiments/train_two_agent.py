@@ -277,10 +277,13 @@ if __name__ == '__main__':
             filewriter.writerow([key, value])
     print(arglist)
 
-    wandb.init(project='RSRN', entity='haeri-hsn', name=arglist.exp_name)
-
+    wandb.init(project='RSRN', entity='haeri-hsn')
     config = wandb.config
-    config.network = 'two-agent_wpm_fully-connected_normal'
+    config.network = 'fully-connected'
+    config.rsrn_type = 'WSM'
+    config.num_agents = 2
+    config.num_landmarks = 2
+    config.slow_agent = False
     config.boundary = '(-2,2)'
     config.learning_rate = arglist.lr
     config.gamma = arglist.gamma

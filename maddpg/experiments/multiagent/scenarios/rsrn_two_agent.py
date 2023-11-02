@@ -170,11 +170,14 @@ class Scenario(BaseScenario):
 
         rew_type = 'push'
 
-        rew_structure = 'multipicative' #'additive'/'multipicative'
+        rew_structure = 'WSM'
 
-        if rew_structure == 'additive':
+
+
+
+        if rew_structure == 'WSM':
             rew = 0
-        if rew_structure == 'multipicative':
+        if rew_structure == 'WPM':
             rew = 1
 
         if rew_type == 'push' and test == 0:
@@ -245,9 +248,9 @@ class Scenario(BaseScenario):
 
 
                 for k in range(len(world.agents)):
-                    if rew_structure == 'multipicative':
+                    if rew_structure == 'WPM':
                         rew = rew * personal_rewards[k]**network[k]
-                    if rew_structure == 'additive':
+                    if rew_structure == 'WSM':
                         rew = rew + personal_rewards[k]*network[k]
                 # rew += np.dot(collision_vector,network)/np.sum(network)
 
