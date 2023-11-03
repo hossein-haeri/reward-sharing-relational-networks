@@ -18,16 +18,16 @@ import wandb
 def parse_args():
     parser = argparse.ArgumentParser("Reinforcement Learning experiments for multiagent environments")
     # Environment
-    parser.add_argument("--scenario", type=str, default="rsrn_original", help="name of the scenario script")
+    parser.add_argument("--scenario", type=str, default="rsrn_two_agent", help="name of the scenario script")
     parser.add_argument("--max-episode-len", type=int, default=70, help="maximum episode length")
-    parser.add_argument("--num-episodes", type=int, default=500000, help="number of episodes")
-    parser.add_argument("--num-agents", type=int, default=3, help="number of agents")
+    parser.add_argument("--num-episodes", type=int, default=250000, help="number of episodes")
+    parser.add_argument("--num-agents", type=int, default=2, help="number of agents")
     parser.add_argument("--num-adversaries", type=int, default=0, help="number of adversaries")
     parser.add_argument("--good-policy", type=str, default="maddpg", help="policy for good agents")
     parser.add_argument("--adv-policy", type=str, default="maddpg", help="policy of adversaries")
     # RSRN parameters
     parser.add_argument("--rsrn-type", type=str, default="WSM", help="how RSRN is implemented (WSM, MinMax, WPM)")
-    parser.add_argument("--agent-limitation", type=str, default="normal", help="is there any limitation on one of the agents?") # normal, slow, stuck 
+    parser.add_argument("--agent-limitation", type=str, default="normal", help="is there any limitation on one of the agents?") # normal, slow, stuck
     # Core training parameters
     parser.add_argument("--lr", type=float, default=1e-2, help="learning rate for Adam optimizer")
     parser.add_argument("--gamma", type=float, default=0.95, help="discount factor")
@@ -138,7 +138,7 @@ def plot_rewards(agent_rewards, average_window,title):
     ax.set_ylabel('Reward')
     plt.grid()
     # plt.legend(['agent 1', 'agent 2', 'agent 3', 'agent 4'])
-    plt.legend(['agent 1', 'agent 2', 'agent 3'])
+    plt.legend(['agent 1', 'agent 2'])
     # plt.legend(['agent 1', 'agent 2'])
     plt.pause(0.0000001)
 
@@ -168,8 +168,8 @@ def train(arglist):
         # episode_rewards = [0.0]  # sum of rewards for all agents
         # agent_rewards = [[0.0] for _ in range(env.n)]  # individual agent reward
         agent_rewards = np.zeros((arglist.num_episodes, env.n))
-        final_ep_rewards = []  # sum of rewards for training curve
-        final_ep_ag_rewards = []  # agent rewards for training curve
+        # final_ep_rewards = []  # sum of rewards for training curve
+        # final_ep_ag_rewards = []  # agent rewards for training curve
         # agent_info = [[[]]]  # placeholder for benchmarking info
         saver = tf.train.Saver()
         obs_n = env.reset()
@@ -177,9 +177,9 @@ def train(arglist):
         train_step = 0
         t_start = time.time()
         episode_count = 0
+
         print('Starting iterations...')
-        while episode_count < arglist.num_episodes:
-            
+        while True:
             # get action
             action_n = [agent.action(obs) for agent, obs in zip(trainers,obs_n)]
             # environment step
@@ -227,26 +227,17 @@ def train(arglist):
             if terminal and (episode_count % arglist.save_rate == 0):
                 U.save_state(arglist.save_dir, saver=saver)
 
-                # mean_rewards = [np.mean(rew[-arglist.save_rate:]) for rew in agent_rewards]
-                # wandb.log({"agent 1": mean_rewards[0], "agent 2": mean_rewards[1], "agent 3": mean_rewards[2]})
-
-                # mean_rewards = [np.mean(rew[-arglist.save_rate:]) for rew in agent_rewards]
+                
+                pickle.dump(agent_rewards, open(str(arglist.save_dir)+'rewards.pkl', 'wb'))
+                
+          
                 roll_mean_rewards = np.mean(agent_rewards[episode_count-arglist.save_rate:episode_count,:], axis=0)
                 wandb.log({ "agent 1": roll_mean_rewards[0],
                             "agent 2": roll_mean_rewards[1],
-                            "agent 3": roll_mean_rewards[2]})
+                            "update time": time.time()-t_start,
+                            })
 
-                # plot_rewards(agent_rewards, arglist.save_rate, arglist.exp_name)
-                # np.savetxt('rewards_'+str(arglist.exp_name)+'_'+str(datetime.date.today())+'.csv', np.asarray(agent_rewards).transpose())
-                # np.savetxt(str(arglist.exp_name)+'_rewards'+'.csv', np.asarray(agent_rewards).transpose())
-                # print(agent_rewards)
 
-                # convert agent_reward to pd dataframe and save to csv where each agent i has a column of rewards
-                # agent_rewards_np = np.asarray(agent_rewards)
-                # agent_rewards_np = agent_rewards_np.T
-                # agent_rewards_np = pd.DataFrame(agent_rewards_np)
-                pickle.dump(agent_rewards, open(str(arglist.save_dir)+'rewards.pkl', 'wb'))
-                
                 print("episodes: {}, agent episode reward: {}, time: {}".format(
                     episode_count,
                     roll_mean_rewards,
@@ -258,16 +249,10 @@ def train(arglist):
                 #     final_ep_ag_rewards.append(np.mean(rew[-arglist.save_rate:]))
 
             # saves final episode reward for plotting training curve later
-            # if len(episode_rewards) > arglist.num_episodes:
-            #     rew_file_name = arglist.plots_dir + arglist.exp_name + '_rewards.pkl'
-            #     with open(rew_file_name, 'wb') as fp:
-            #         pickle.dump(final_ep_rewards, fp)
-            #     agrew_file_name = arglist.plots_dir + arglist.exp_name + '_agrewards.pkl'
-            #     with open(agrew_file_name, 'wb') as fp:
-            #         pickle.dump(final_ep_ag_rewards, fp)
-            #     print('...Finished total of {} episodes.'.format(len(episode_rewards)))
-            #     # filewriter.writerow(agent_rewards)
-            #     break
+            if episode_count > arglist.num_episodes:
+                print('...Finished total of {} episodes.'.format(episode_count))
+                # filewriter.writerow(agent_rewards)
+                break
 
 if __name__ == '__main__':
     arglist = parse_args()
@@ -281,13 +266,13 @@ if __name__ == '__main__':
             filewriter.writerow([key, value])
     print(arglist)
 
-    wandb.init(project='RSRN', entity='haeri-hsn', name=arglist.exp_name)
-
+    wandb.init(project='RSRN', entity='haeri-hsn')
     config = wandb.config
-    config.network = 'fully-connected'
-    config.rsrn_type = 'WPM'
-    config.num_agents = 3
-    config.num_landmarks = 3
+    config.network = arglist.network
+    config.num_agents = arglist.num_agents
+    config.num_landmarks = arglist.num_landmarks
+    config.agent_limitation = arglist.agent_limitation
+    config.rsrn_type = arglist.rsrn_type
     config.boundary = '(-2,2)'
     config.learning_rate = arglist.lr
     config.gamma = arglist.gamma

@@ -179,7 +179,7 @@ class World(object):
             entity.state.p_pos += entity.state.p_vel * self.dt
             
             # bound entity position to -2.0, 2.0
-            entity.state.p_pos = np.clip(entity.state.p_pos, -2.0, 2.0)
+            entity.state.p_pos = np.clip(entity.state.p_pos, -1.2, 1.2)
 
 
 

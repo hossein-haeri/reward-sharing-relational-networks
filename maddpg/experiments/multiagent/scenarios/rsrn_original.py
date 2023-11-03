@@ -4,30 +4,27 @@ from multiagent.scenario import BaseScenario
 
 # np.random.seed(101)
 class Scenario(BaseScenario):
-    def make_world(self):
+    def make_world(self, arglist):
         world = World()
         # set any world properties first
         world.dim_c = 2
-        num_agents = 3
-        num_landmarks = 3
         world.collaborative = False
+        world.num_agents = arglist.num_agents
+        world.num_landmarks = arglist.num_landmarks
+        world.agent_limitation = arglist.agent_limitation
+        world.network = arglist.network
+        world.rsrn_type = arglist.rsrn_type
 
         # add agents
-        world.agents = [Agent() for i in range(num_agents)]
+        world.agents = [Agent() for i in range(world.num_landmarks)]
         for i, agent in enumerate(world.agents):
             agent.name = 'agent %d' % (i+1)
             agent.collide = True
             agent.silent = True
             agent.size = 0.2
-            # if i < 2:
-            #     agent.color = np.array([0.9, 0.2, 0.5])
-            #     agent.team = 'A'
-            # else:
-            #     agent.color = np.array([0.35, 0.35, 0.85])
-            #     agent.team = 'B'
 
         # add landmarks
-        world.landmarks = [Landmark() for i in range(num_landmarks)]
+        world.landmarks = [Landmark() for i in range(world.num_agents)]
         for i, landmark in enumerate(world.landmarks):
             landmark.name = 'landmark %d' % i
             landmark.collide = False
@@ -42,35 +39,22 @@ class Scenario(BaseScenario):
         BLUE = [0, 0.4470, 0.7410]
         RED = [0.8500, 0.3250, 0.0980]
         YELLOW = [0.929, 0.6940, 0.1250]
+        GRAY = [0.5, 0.5, 0.5]
+
         for i, agent in enumerate(world.agents):
-            agent.color = np.array(BLUE) ## BLUE
-            # if agent.name == 'agent 1':
-            #     agent.color = np.array([0.84, 0.15, 0.15]) ## BLUE
-            # if agent.name == 'agent 2':
-
-            # if agent.name == 'agent 3':
-            #     agent.color = np.array(BLUE) ## BLUE
-            # if agent.name == 'agent 4':
-            #     agent.color = np.array(BLUE) ## BLUE
-            # if agent.name == 'agent 5':
-            #     agent.color = np.array(BLUE) ## BLUE
-            # if agent.name == 'agent 6':
-            #     agent.color = np.array(BLUE) ## BLUE
-
-
+            agent.color = np.array(GRAY) 
             if agent.name == 'agent 1':
                 agent.color = np.array(BLUE) ## BLUE
-
             if agent.name == 'agent 2':
                 agent.color = np.array(RED) ## BLUE
-
-
             if agent.name == 'agent 3':
                 agent.color = np.array(YELLOW) ## BLUE
-                # agent.initial_mass = 5
-                # agent.size = 0.4
-                agent.max_action_force = 0.1
+        
+        if world.agent_limitation == 'slow':
+            world.agents[-1].max_action_force = 0.1
 
+        if world.agent_limitation == 'stuck':
+            world.agents[-1].movable = False
 
 
 
@@ -170,19 +154,16 @@ class Scenario(BaseScenario):
         return True if dist < dist_min else False
 
     def reward(self, agent, world):
-        # Agents are rewarded based on minimum agent distance to each landmark, penalized for collisions
-        test = 0
 
-        rew_type = 'push'
+        if world.network == 'self-interested':
+            if agent.name == 'agent 1':
+                network = np.array([1, 0, 0])
+            if agent.name == 'agent 2':
+                network = np.array([0, 1, 0])
+            if agent.name == 'agent 3':
+                network = np.array([0, 0, 1])
 
-        rew_structure = 'multipicative' #'additive'/'multipicative'
-
-        if rew_structure == 'additive':
-            rew = 0
-        if rew_structure == 'multipicative':
-            rew = 1
-
-        if rew_type == 'push' and test == 0:
+        if world.network == 'fully-connected':
             if agent.name == 'agent 1':
                 network = np.array([1, 1, 1])
             if agent.name == 'agent 2':
@@ -190,79 +171,71 @@ class Scenario(BaseScenario):
             if agent.name == 'agent 3':
                 network = np.array([1, 1, 1])
 
-        ### Centeralized Reward
-        # for l in world.landmarks:
-        #     dists = [np.sqrt(np.sum(np.square(a.state.p_pos - l.state.p_pos))) for a in world.agents]
-        #     # dists = dists * network
-        #     rew -= min(dists)
-        #     # rew -= np.dot(dists,network)
-        #     # rew -= np.dot(dists,network)/np.sum(network)
-        # rew = 0
+        if world.network == 'authoritarian':
+            if agent.name == 'agent 1':
+                network = np.array([1, 0, 1])
+            if agent.name == 'agent 2':
+                network = np.array([0, 1, 1])
+            if agent.name == 'agent 3':
+                network = np.array([0, 0, 1])
+
+        if world.network == 'tribal':
+            if agent.name == 'agent 1':
+                network = np.array([1, 1, 0])
+            if agent.name == 'agent 2':
+                network = np.array([0, 1, 1])
+            if agent.name == 'agent 3':
+                network = np.array([1, 0, 1])
+        
+        if world.network == 'collapsed authoritarian':
+            if agent.name == 'agent 1':
+                network = np.array([0, 0, 1])
+            if agent.name == 'agent 2':
+                network = np.array([0, 0, 1])
+            if agent.name == 'agent 3':
+                network = np.array([0, 0, 1])
+
+        if world.network == 'collapsed tribal':
+            if agent.name == 'agent 1':
+                network = np.array([0, 1, 0])
+            if agent.name == 'agent 2':
+                network = np.array([0, 0, 1])
+            if agent.name == 'agent 3':
+                network = np.array([1, 0, 0])
+
+        assert sum(network) != 0
 
 
-        ### Decenteralized Reward
-        # dists = [np.sum(np.square(agent.state.p_pos - l.state.p_pos)) for l in world.landmarks]
-        # rew = - min(np.sqrt(dists))
-
-        ### Networked Reward
-        if 'network' in locals():
-            # count and record the number of pairwise collisions
-            # collision_counter = [0] * len(world.agents)
-            # if agent.collide:
-            #     for i, a in enumerate(world.agents):
-            #         if self.is_collision(a, agent):
-            #             # red = np.array([0.84, 0.15, 0.15])
-            #             # blue = np.array([0.12, 0.46, 0.70])
-            #             # rew -= 1
-            #             if a.name == 'agent 1':
-            #                 collision_counter[0] = 1
-            #             if a.name == 'agent 2':
-            #                 collision_counter[1] = 1
-            #
-            # with open(str(rew_type)+'_'+str(agent.name)+"_collision.csv", "a") as f:
-            #     f.write(','.join(map(str, collision_counter))+'\n')
-
-            # calculate rewards
-            landmark_vector = []
-            # collision_vector = np.zeros(len(world.agents))
-
-            for i, a in enumerate(world.agents):
-                # dists = [np.sum(np.square(a.state.p_pos - l.state.p_pos)) for l in world.landmarks]
-                # landmark_vector.append(-min(np.sqrt(dists)))
-                # for j, agent_j in enumerate(world.agents):
-                #     if self.is_collision(a, agent_j):
-                #         collision_vector[i] = 0
-
-                dists = np.sqrt([np.sum(np.square(a.state.p_pos - l.state.p_pos)) for l in world.landmarks])
-                d = min(dists)
-                if d < 0.2 or True:
-                    landmark_vector.append(max(np.exp(-(d**2)/0.1),0.01))
-                    # landmark_vector.append(1)
-                else:
-                    landmark_vector.append(np.array(0))
-
-
-            if np.sum(network) != 0:
-                # personal_rewards = np.add(np.asarray(landmark_vector),collision_vector)
-                personal_rewards = landmark_vector
-                # rew = np.dot(personal_rewards,network)/np.sum(network)
-                # rew = np.dot(network,personal_rewards)
-                # rew = personal_rewards[0] * personal_rewards[1] * personal_rewards[2]
-
-
-                for k in range(len(world.agents)):
-                    if rew_structure == 'multipicative':
-                        rew = rew * personal_rewards[k]**network[k]
-                    if rew_structure == 'additive':
-                        rew = rew + personal_rewards[k]*network[k]
-                # rew += np.dot(collision_vector,network)/np.sum(network)
+        # evaluate individual rewards according to the distance to the closest landmarks
+        base_reward = 0.01
+        individual_rewards = []
+        for i, a in enumerate(world.agents):
+            dists = np.sqrt([np.sum(np.square(a.state.p_pos - l.state.p_pos)) for l in world.landmarks])
+            d = min(dists)
+            if d < 0.2 or True:
+                individual_rewards.append(max(np.exp(-(d**2)/0.1), base_reward))
+            else:
+                individual_rewards.append(np.array(0))
 
 
 
-        # rew = rew * np.e**(-episode_step/12)
-        # rew = rew * episode_step
-        # print(episode_step)
-        return rew
+        if world.rsrn_type == 'WSM':
+            shared_reward = 0
+            for k in range(len(world.agents)):
+                shared_reward = shared_reward + individual_rewards[k]*network[k]
+        if world.rsrn_type == 'WPM':
+            shared_reward = 1
+            for k in range(len(world.agents)):
+                shared_reward = shared_reward * individual_rewards[k]**network[k]
+        if world.rsrn_type == 'MinMax':
+            priorities = []
+            for k in range(len(world.agents)):
+                if network[k] == 1:
+                    priorities.append(individual_rewards[k])
+            shared_reward = min(priorities)
+ 
+ 
+        return shared_reward
 
     def observation(self, agent, world):
         # get positions of all entities in this agent's reference frame

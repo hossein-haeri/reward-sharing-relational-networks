@@ -8,9 +8,9 @@ xz-utils tk-dev libffi-dev liblzma-dev python3-openssl git
 
 curl https://pyenv.run | bash
 
-export PATH="$HOME/.pyenv/bin:$PATH"
-eval "$(pyenv init --path)"
-eval "$(pyenv virtualenv-init -)"
+echo 'export PATH="$HOME/.pyenv/bin:$PATH"' >> ~/.bashrc
+echo 'eval "$(pyenv init --path)"' >> ~/.bashrc
+echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.bashrc
 
 
 source ~/.bashrc
@@ -19,7 +19,7 @@ pyenv global 3.5.4
 
 
 pip install numpy==1.14.5
-pip install protobuf==3.6.1
+pip install protobuf==3.11.3
 pip install tensorflow==1.8.0
 pip install gym==0.10.5
 
