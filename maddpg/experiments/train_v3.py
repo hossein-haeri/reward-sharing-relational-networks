@@ -1,6 +1,7 @@
 import os
 import warnings
 warnings.filterwarnings("ignore", category=UserWarning)
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 os.environ['SUPPRESS_MA_PROMPT'] = '1'
 os.environ['WANDB_SILENT'] = 'true'
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # 2: WARNING and ERROR messages are not printed
