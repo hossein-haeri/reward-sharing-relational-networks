@@ -1,0 +1,68 @@
+wandb_version: 1
+
+_wandb:
+  desc: null
+  value:
+    cli_version: 0.11.2
+    framework: tensorflow
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    python_version: 3.5.4
+    t:
+      1:
+      - 3
+      4: 3.5.4
+      5: 0.11.2
+      8:
+      - 5
+adv_policy:
+  desc: null
+  value: maddpg
+agent_limitation:
+  desc: null
+  value: slow
+batch_size:
+  desc: null
+  value: 2048
+boundary:
+  desc: null
+  value: (-1.2,1.2)
+exp_name:
+  desc: null
+  value: '{1..3}'
+gamma:
+  desc: null
+  value: 0.95
+good_policy:
+  desc: null
+  value: maddpg
+learning_rate:
+  desc: null
+  value: 0.01
+max_episode_len:
+  desc: null
+  value: 70
+network:
+  desc: null
+  value: fully-connected
+num_agents:
+  desc: null
+  value: 2
+num_episodes:
+  desc: null
+  value: 250000
+num_landmarks:
+  desc: null
+  value: 2
+num_units:
+  desc: null
+  value: 64
+rsrn_type:
+  desc: null
+  value: WPM
+save_dir:
+  desc: null
+  value: ./saved_policy/2-agent/WPM/fully-connected/{1..3}/
+save_rate:
+  desc: null
+  value: 1000

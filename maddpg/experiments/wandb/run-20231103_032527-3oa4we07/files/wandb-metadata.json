@@ -1,0 +1,35 @@
+{
+    "codePath": "maddpg/experiments/train_v3.py",
+    "os": "Linux-5.15.0-1048-aws-x86_64-with-debian-bullseye-sid",
+    "cuda": null,
+    "args": [
+        "--num-agents",
+        "2",
+        "--num-landmarks",
+        "2",
+        "--rsrn-type",
+        "WPM",
+        "--network",
+        "fully-connected",
+        "--num-episodes",
+        "300000",
+        "--exp-name",
+        "slow_1"
+    ],
+    "host": "ip-172-31-35-235",
+    "username": "ubuntu",
+    "heartbeatAt": "2023-11-03T03:25:31.649845",
+    "git": {
+        "commit": "e04d83f22b4d7822b530ee270d69b9df8263bcd9",
+        "remote": "https://github.com/hossein-haeri/reward-sharing-relational-networks.git"
+    },
+    "state": "running",
+    "cpu_count": 16,
+    "startedAt": "2023-11-03T03:25:27.708957",
+    "docker": null,
+    "python": "3.5.4",
+    "program": "train_v3.py",
+    "executable": "/home/ubuntu/.pyenv/versions/3.5.4/bin/python",
+    "root": "/home/ubuntu/reward-sharing-relational-networks",
+    "email": null
+}
