@@ -270,7 +270,7 @@ if __name__ == '__main__':
         filewriter = csv.writer(csvfile, delimiter=':')
         for key, value in vars(arglist).items():
             filewriter.writerow([key, value])
-    print(arglist)
+    # print(arglist)
 
 
     wandb.init(project='RSRN', entity='haeri-hsn')
