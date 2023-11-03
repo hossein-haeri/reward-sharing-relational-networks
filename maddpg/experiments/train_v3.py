@@ -1,10 +1,10 @@
 import os
 import warnings
+warnings.filterwarnings("ignore", category=UserWarning)
 os.environ['SUPPRESS_MA_PROMPT'] = '1'
 os.environ['WANDB_SILENT'] = 'true'
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # 2: WARNING and ERROR messages are not printed
 # Suppress specific warnings about Python 3.5 support being deprecated
-warnings.filterwarnings("ignore", message="Python 3.5 support is deprecated and will be removed")
 
 import argparse
 import numpy as np
@@ -237,9 +237,15 @@ def train(arglist):
 
                 # mean_rewards = [np.mean(rew[-arglist.save_rate:]) for rew in agent_rewards]
                 roll_mean_rewards = np.mean(agent_rewards[episode_count-arglist.save_rate:episode_count,:], axis=0)
-                wandb.log({ "agent 1": roll_mean_rewards[0],
-                            "agent 2": roll_mean_rewards[1],
-                            "agent 3": roll_mean_rewards[2]})
+
+                # log rewards according to number of agents
+                if arglist.num_agents == 2:
+                    wandb.log({ "agent 1": roll_mean_rewards[0],
+                                "agent 2": roll_mean_rewards[1]})
+                elif arglist.num_agents == 3:
+                    wandb.log({ "agent 1": roll_mean_rewards[0],
+                                "agent 2": roll_mean_rewards[1],
+                                "agent 3": roll_mean_rewards[2]})
 
                 pickle.dump(agent_rewards, open(str(arglist.save_dir)+'rewards.pkl', 'wb'))
                 
