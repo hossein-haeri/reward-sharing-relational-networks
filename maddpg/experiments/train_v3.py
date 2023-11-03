@@ -20,13 +20,15 @@ def parse_args():
     # Environment
     parser.add_argument("--scenario", type=str, default="rsrn_original", help="name of the scenario script")
     parser.add_argument("--max-episode-len", type=int, default=70, help="maximum episode length")
-    parser.add_argument("--num-episodes", type=int, default=500000, help="number of episodes")
+    parser.add_argument("--num-episodes", type=int, default=50000, help="number of episodes")
     parser.add_argument("--num-agents", type=int, default=3, help="number of agents")
+    parser.add_argument("--num-landmarks", type=int, default=3, help="number of landmarks")
     parser.add_argument("--num-adversaries", type=int, default=0, help="number of adversaries")
     parser.add_argument("--good-policy", type=str, default="maddpg", help="policy for good agents")
     parser.add_argument("--adv-policy", type=str, default="maddpg", help="policy of adversaries")
     # RSRN parameters
     parser.add_argument("--rsrn-type", type=str, default="WSM", help="how RSRN is implemented (WSM, MinMax, WPM)")
+    parser.add_argument("--network", type=str, default="fully-connected", help="which network to use (fully-connected, self-interested, authoritarian, ...)")
     parser.add_argument("--agent-limitation", type=str, default="normal", help="is there any limitation on one of the agents?") # normal, slow, stuck 
     # Core training parameters
     parser.add_argument("--lr", type=float, default=1e-2, help="learning rate for Adam optimizer")
@@ -66,7 +68,7 @@ def make_env(scenario_name, arglist, benchmark=False):
     # load scenario from script
     scenario = scenarios.load(scenario_name + ".py").Scenario()
     # create world
-    world = scenario.make_world()
+    world = scenario.make_world(arglist)
     # create multiagent environment
     if benchmark:
         env = MultiAgentEnv(world, scenario.reset_world, scenario.reward, scenario.observation, scenario.benchmark_data)
@@ -177,8 +179,9 @@ def train(arglist):
         train_step = 0
         t_start = time.time()
         episode_count = 0
+
         print('Starting iterations...')
-        while episode_count < arglist.num_episodes:
+        while True:
             
             # get action
             action_n = [agent.action(obs) for agent, obs in zip(trainers,obs_n)]
@@ -202,7 +205,6 @@ def train(arglist):
                 obs_n = env.reset()
                 episode_step = 0
                 episode_count += 1
-
 
             # increment global step counter
             train_step += 1
@@ -228,23 +230,11 @@ def train(arglist):
                 U.save_state(arglist.save_dir, saver=saver)
 
                 # mean_rewards = [np.mean(rew[-arglist.save_rate:]) for rew in agent_rewards]
-                # wandb.log({"agent 1": mean_rewards[0], "agent 2": mean_rewards[1], "agent 3": mean_rewards[2]})
-
-                # mean_rewards = [np.mean(rew[-arglist.save_rate:]) for rew in agent_rewards]
                 roll_mean_rewards = np.mean(agent_rewards[episode_count-arglist.save_rate:episode_count,:], axis=0)
                 wandb.log({ "agent 1": roll_mean_rewards[0],
                             "agent 2": roll_mean_rewards[1],
                             "agent 3": roll_mean_rewards[2]})
 
-                # plot_rewards(agent_rewards, arglist.save_rate, arglist.exp_name)
-                # np.savetxt('rewards_'+str(arglist.exp_name)+'_'+str(datetime.date.today())+'.csv', np.asarray(agent_rewards).transpose())
-                # np.savetxt(str(arglist.exp_name)+'_rewards'+'.csv', np.asarray(agent_rewards).transpose())
-                # print(agent_rewards)
-
-                # convert agent_reward to pd dataframe and save to csv where each agent i has a column of rewards
-                # agent_rewards_np = np.asarray(agent_rewards)
-                # agent_rewards_np = agent_rewards_np.T
-                # agent_rewards_np = pd.DataFrame(agent_rewards_np)
                 pickle.dump(agent_rewards, open(str(arglist.save_dir)+'rewards.pkl', 'wb'))
                 
                 print("episodes: {}, agent episode reward: {}, time: {}".format(
@@ -252,22 +242,11 @@ def train(arglist):
                     roll_mean_rewards,
                     round(time.time()-t_start, 3)))
                 t_start = time.time()
-                # # Keep track of final episode reward
-                # final_ep_rewards.append(np.mean(episode_rewards[-arglist.save_rate:]))
-                # for rew in agent_rewards:
-                #     final_ep_ag_rewards.append(np.mean(rew[-arglist.save_rate:]))
 
-            # saves final episode reward for plotting training curve later
-            # if len(episode_rewards) > arglist.num_episodes:
-            #     rew_file_name = arglist.plots_dir + arglist.exp_name + '_rewards.pkl'
-            #     with open(rew_file_name, 'wb') as fp:
-            #         pickle.dump(final_ep_rewards, fp)
-            #     agrew_file_name = arglist.plots_dir + arglist.exp_name + '_agrewards.pkl'
-            #     with open(agrew_file_name, 'wb') as fp:
-            #         pickle.dump(final_ep_ag_rewards, fp)
-            #     print('...Finished total of {} episodes.'.format(len(episode_rewards)))
-            #     # filewriter.writerow(agent_rewards)
-            #     break
+            
+            if episode_count > arglist.num_episodes:
+                print('...Finished total of {} episodes.'.format(episode_count))
+                break
 
 if __name__ == '__main__':
     arglist = parse_args()
@@ -281,14 +260,15 @@ if __name__ == '__main__':
             filewriter.writerow([key, value])
     print(arglist)
 
-    wandb.init(project='RSRN', entity='haeri-hsn', name=arglist.exp_name)
 
+    wandb.init(project='RSRN', entity='haeri-hsn')
     config = wandb.config
-    config.network = 'fully-connected'
-    config.rsrn_type = 'WPM'
-    config.num_agents = 3
-    config.num_landmarks = 3
-    config.boundary = '(-2,2)'
+    config.network = arglist.network
+    config.num_agents = arglist.num_agents
+    config.num_landmarks = arglist.num_landmarks
+    config.agent_limitation = arglist.agent_limitation
+    config.rsrn_type = arglist.rsrn_type
+    config.boundary = '(-1.2,1.2)'
     config.learning_rate = arglist.lr
     config.gamma = arglist.gamma
     config.batch_size = arglist.batch_size
