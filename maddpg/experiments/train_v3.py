@@ -1,7 +1,8 @@
 import os
 import warnings
-warnings.filterwarnings("ignore", category=UserWarning)
-warnings.filterwarnings("ignore", category=DeprecationWarning)
+# warnings.filterwarnings("ignore", category=UserWarning)
+# warnings.filterwarnings("ignore", category=DeprecationWarning)
+warnings.filterwarnings("ignore")
 os.environ['SUPPRESS_MA_PROMPT'] = '1'
 os.environ['WANDB_SILENT'] = 'true'
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # 2: WARNING and ERROR messages are not printed
@@ -162,7 +163,7 @@ def train(arglist):
         obs_shape_n = [env.observation_space[i].shape for i in range(env.n)]
         num_adversaries = min(env.n, arglist.num_adversaries)
         trainers = get_trainers(env, num_adversaries, obs_shape_n, arglist)
-        print('Using good policy {} and adv policy {}'.format(arglist.good_policy, arglist.adv_policy))
+        print('{}-agent with {} rsrn type and {} network'.format(arglist.num_agents, arglist.rsrn_type, arglist.network))
 
         # Initialize
         U.initialize()
