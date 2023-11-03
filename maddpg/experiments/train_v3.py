@@ -255,7 +255,7 @@ def train(arglist):
 
 if __name__ == '__main__':
     arglist = parse_args()
-    arglist.save_dir = "./saved_policy/"+arglist.num_agents+"-agent/"+arglist.rsrn_type+"/"+arglist.network+"/"+arglist.exp_name+"/"
+    arglist.save_dir = "./saved_policy/"+str(arglist.num_agents)+"-agent/"+arglist.rsrn_type+"/"+arglist.network+"/"+str(arglist.exp_name)+"/"
     # save all arguments to csv file in a new directory (arglist.save_dir)
     if not os.path.exists(arglist.save_dir):
         os.makedirs(arglist.save_dir)
