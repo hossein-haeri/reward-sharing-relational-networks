@@ -20,16 +20,16 @@ def parse_args():
     # Environment
     parser.add_argument("--scenario", type=str, default="rsrn_original", help="name of the scenario script")
     parser.add_argument("--max-episode-len", type=int, default=70, help="maximum episode length")
-    parser.add_argument("--num-episodes", type=int, default=50000, help="number of episodes")
+    parser.add_argument("--num-episodes", type=int, default=500000, help="number of episodes")
     parser.add_argument("--num-agents", type=int, default=3, help="number of agents")
     parser.add_argument("--num-landmarks", type=int, default=3, help="number of landmarks")
     parser.add_argument("--num-adversaries", type=int, default=0, help="number of adversaries")
     parser.add_argument("--good-policy", type=str, default="maddpg", help="policy for good agents")
     parser.add_argument("--adv-policy", type=str, default="maddpg", help="policy of adversaries")
     # RSRN parameters
-    parser.add_argument("--rsrn-type", type=str, default="WSM", help="how RSRN is implemented (WSM, MinMax, WPM)")
+    parser.add_argument("--rsrn-type", type=str, default="WPM", help="how RSRN is implemented (WSM, MinMax, WPM)")
     parser.add_argument("--network", type=str, default="fully-connected", help="which network to use (fully-connected, self-interested, authoritarian, ...)")
-    parser.add_argument("--agent-limitation", type=str, default="normal", help="is there any limitation on one of the agents?") # normal, slow, stuck 
+    parser.add_argument("--agent-limitation", type=str, default="slow", help="is there any limitation on one of the agents?") # normal, slow, stuck 
     # Core training parameters
     parser.add_argument("--lr", type=float, default=1e-2, help="learning rate for Adam optimizer")
     parser.add_argument("--gamma", type=float, default=0.95, help="discount factor")
