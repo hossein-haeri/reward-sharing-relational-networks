@@ -54,8 +54,7 @@ class Scenario(BaseScenario):
             world.agents[-1].max_action_force = 0.1
 
         if world.agent_limitation == 'stuck':
-            world.agents[-1].movable = False
-
+            world.agents[-1].max_speed = 0.0
 
 
 

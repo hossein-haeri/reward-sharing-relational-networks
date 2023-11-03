@@ -42,6 +42,7 @@ class Entity(object):
         self.max_speed = None
         # max action force (used to limit accelerations in RSRN experiment)
         self.max_action_force = None
+
         self.accel = None
         # state
         self.state = EntityState()
