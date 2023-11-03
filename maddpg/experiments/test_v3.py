@@ -206,8 +206,7 @@ def train(arglist):
             obs_n = new_obs_n
 
             for i, rew in enumerate(rew_n):
-                # episode_rewards[-1] += rew
-                agent_rewards[episode_count, i] += rew
+                agent_rewards[episode_count, i] = rew
 
 
             if done or terminal:
@@ -276,7 +275,7 @@ def train(arglist):
                     round(time.time()-t_start, 3)))
                 t_start = time.time()
 
-            if episode_count > arglist.num_episodes:
+            if episode_count >= arglist.num_episodes:
                 print('...Finished total of {} episodes.'.format(episode_count))
                 break
 

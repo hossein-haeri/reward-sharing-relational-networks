@@ -152,10 +152,32 @@ def plot_rewards(agent_rewards, average_window,title):
     # plt.legend(['agent 1', 'agent 2'])
     plt.pause(0.0000001)
 
-def train(arglist):
-    # csvfile = open('test.csv', 'w', newline='')
-    # filewriter = csv.writer(csvfile, delimiter=' ')
+def is_collision(agent1, agent2):
+    delta_pos = agent1.state.p_pos - agent2.state.p_pos
+    dist = np.sqrt(np.sum(np.square(delta_pos)))
+    dist_min = agent1.size + agent2.size
+    return True if dist < dist_min else False
 
+def benchmark_data(agent, world):
+    rew = 0
+    collisions = 0
+    occupied_landmarks = 0
+    min_dists = 0
+    for l in world.landmarks:
+        dists = [np.sqrt(np.sum(np.square(a.state.p_pos - l.state.p_pos))) for a in world.agents]
+        min_dists += min(dists)
+        rew -= min(dists)
+        if min(dists) < 0.1:
+            occupied_landmarks += 1
+    if agent.collide:
+        for a in world.agents:
+            if is_collision(a, agent):
+                rew -= 1
+                collisions += 1
+    return (rew, collisions, min_dists, occupied_landmarks)
+
+
+def train(arglist):
     with U.single_threaded_session():
         # Create environment
         env = make_env(arglist.scenario, arglist, arglist.benchmark)
@@ -168,6 +190,7 @@ def train(arglist):
         # Initialize
         U.initialize()
 
+        
         # Load previous results, if necessary
         if arglist.load_dir == "":
             arglist.load_dir = arglist.save_dir
@@ -175,19 +198,17 @@ def train(arglist):
             print('Loading previous state...')
             U.load_state(arglist.load_dir)
 
-        # episode_rewards = [0.0]  # sum of rewards for all agents
-        # agent_rewards = [[0.0] for _ in range(env.n)]  # individual agent reward
         agent_rewards = np.zeros((arglist.num_episodes, env.n))
-        final_ep_rewards = []  # sum of rewards for training curve
-        final_ep_ag_rewards = []  # agent rewards for training curve
-        # agent_info = [[[]]]  # placeholder for benchmarking info
         saver = tf.train.Saver()
         obs_n = env.reset()
         episode_step = 0
         train_step = 0
         t_start = time.time()
         episode_count = 0
+        episode_trajectory = []
+        trajectories = []
 
+        agent_fixed_location = np.random
         print('Starting iterations...')
         while True:
             
@@ -210,6 +231,8 @@ def train(arglist):
 
 
             if done or terminal:
+                trajectories.append(episode_trajectory)
+                episode_trajectory = []
                 obs_n = env.reset()
                 episode_step = 0
                 episode_count += 1
@@ -226,12 +249,27 @@ def train(arglist):
             env.world.time = episode_step
 
 
-            # update all trainers, if not in display or benchmark mode
-            loss = None
-            for agent in trainers:
-                agent.preupdate()
-            for agent in trainers:
-                loss = agent.update(trainers, train_step)
+            if not arglist.test_mode:
+                # update all trainers, if not in display or benchmark mode
+                loss = None
+                for agent in trainers:
+                    agent.preupdate()
+                for agent in trainers:
+                    loss = agent.update(trainers, train_step)
+            else:
+                row = []
+                row.append(episode_count+1)
+                row.append(episode_step)
+                for agent in env.world.agents:
+                    row.append(agent.state.p_pos[0])
+                    row.append(agent.state.p_pos[1])
+                for landmark in env.world.landmarks:
+                    row.append(landmark.state.p_pos[0])
+                    row.append(landmark.state.p_pos[1])
+                row.append(rew_n[0])
+                row.append(rew_n[1])
+                row.append(rew_n[2])
+                episode_trajectory.append(row)
 
             # save model, display training output
             if terminal and (episode_count % arglist.save_rate == 0):
@@ -251,13 +289,17 @@ def train(arglist):
 
                 pickle.dump(agent_rewards, open(str(arglist.save_dir)+'rewards.pkl', 'wb'))
                 
+                if arglist.test_mode:
+                    with open(arglist.load_dir + '/test_trajectory.pkl', 'wb') as file:
+                        pickle.dump(trajectories, file)
+
                 print("episodes: {}, agent episode reward: {}, time: {}".format(
                     episode_count,
                     roll_mean_rewards,
                     round(time.time()-t_start, 3)))
                 t_start = time.time()
 
-            if episode_count > arglist.num_episodes:
+            if episode_count >= arglist.num_episodes:
                 print('...Finished total of {} episodes.'.format(episode_count))
                 break
 
