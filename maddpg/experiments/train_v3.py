@@ -1,5 +1,7 @@
 import os
 os.environ['SUPPRESS_MA_PROMPT'] = '1'
+os.environ['WANDB_SILENT'] = 'true'
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # 2: WARNING and ERROR messages are not printed
 import argparse
 import numpy as np
 import pandas as pd

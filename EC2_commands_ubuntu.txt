@@ -19,7 +19,7 @@ pyenv global 3.5.4
 
 
 pip install numpy==1.14.5
-pip install protobuf==3.6.1
+pip install protobuf==3.11.3
 pip install tensorflow==1.8.0
 pip install gym==0.10.5
 
