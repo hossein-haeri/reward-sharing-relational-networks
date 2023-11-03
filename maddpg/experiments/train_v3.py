@@ -163,7 +163,7 @@ def train(arglist):
         obs_shape_n = [env.observation_space[i].shape for i in range(env.n)]
         num_adversaries = min(env.n, arglist.num_adversaries)
         trainers = get_trainers(env, num_adversaries, obs_shape_n, arglist)
-        print('{}-agent with {} rsrn type and {} network'.format(arglist.num_agents, arglist.rsrn_type, arglist.network))
+        print('initiating {}-agent using {} with {} network'.format(arglist.num_agents, arglist.rsrn_type, arglist.network))
 
         # Initialize
         U.initialize()
