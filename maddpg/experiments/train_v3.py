@@ -1,7 +1,11 @@
 import os
+import warnings
 os.environ['SUPPRESS_MA_PROMPT'] = '1'
 os.environ['WANDB_SILENT'] = 'true'
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # 2: WARNING and ERROR messages are not printed
+# Suppress specific warnings about Python 3.5 support being deprecated
+warnings.filterwarnings("ignore", message="Python 3.5 support is deprecated and will be removed")
+
 import argparse
 import numpy as np
 import pandas as pd
@@ -245,14 +249,13 @@ def train(arglist):
                     round(time.time()-t_start, 3)))
                 t_start = time.time()
 
-            
             if episode_count > arglist.num_episodes:
                 print('...Finished total of {} episodes.'.format(episode_count))
                 break
 
 if __name__ == '__main__':
     arglist = parse_args()
-    arglist.save_dir = "./saved_policy/" + arglist.exp_name + "/"
+    arglist.save_dir = "./saved_policy/"+arglist.num_agents+"-agent/"+arglist.rsrn_type+"/"+arglist.network+"/"+arglist.exp_name+"/"
     # save all arguments to csv file in a new directory (arglist.save_dir)
     if not os.path.exists(arglist.save_dir):
         os.makedirs(arglist.save_dir)
