@@ -3,7 +3,7 @@ cd maddpg/experiments/
 
 
 num_runs=3
-num_episodes=5000
+num_episodes=1000
 
 for i in $(seq 1 $num_runs); do
     loadingdir=./saved_policy/2-agent/WSM/fully-connected/slow_$i/
