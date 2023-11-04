@@ -1,7 +1,0 @@
-num-agents = 3
-num-landmarks = 3
---max-episode-len: 70
---lr = 0.01
---gamma = .99
---batch-size = 2048
---num-units = 64
