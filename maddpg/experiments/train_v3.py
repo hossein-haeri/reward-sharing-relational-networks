@@ -314,7 +314,7 @@ if __name__ == '__main__':
         with open(arglist.load_dir+'hyperparams.txt', 'r') as f:
             reader = csv.reader(f, delimiter=':')
             hyperparams = dict(reader)
-            print(hyperparams)
+            # print(hyperparams)
             arglist.num_agents = int(hyperparams['num_agents'])
             arglist.num_landmarks = int(hyperparams['num_landmarks'])
             arglist.agent_limitation = hyperparams['agent_limitation']
@@ -322,7 +322,7 @@ if __name__ == '__main__':
             arglist.network = hyperparams['network']
             arglist.exp_name = hyperparams['exp_name']+"_test"
             arglist.gamma = float(hyperparams['gamma'])
-            arglist.lr = float(hyperparams['learning_rate'])
+            arglist.lr = float(hyperparams['lr'])
             arglist.num_units = int(hyperparams['num_units'])
             arglist.batch_size = int(hyperparams['batch_size'])
             arglist.max_episode_len = int(hyperparams['max_episode_len'])
