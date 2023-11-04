@@ -272,7 +272,8 @@ def train(arglist):
                     row.append(landmark.state.p_pos[1])
                 row.append(rew_n[0])
                 row.append(rew_n[1])
-                row.append(rew_n[2])
+                if arglist.num_agents == 3:
+                    row.append(rew_n[2])
                 episode_trajectory.append(row)
 
             # save model, display training output
