@@ -211,8 +211,8 @@ def train(arglist):
         episode_count = 0
         episode_trajectory = []
         trajectories = []
-
-        agent_fixed_location = np.random
+        
+        agent_fixed_location = np.random.uniform(-1, +1, env.world.dim_p)
         print('Starting iterations...')
         while True:
             
@@ -224,14 +224,14 @@ def train(arglist):
             episode_step += 1
             done = all(done_n)
             terminal = (episode_step >= arglist.max_episode_len)
+
             # collect experience
             for i, agent in enumerate(trainers):
                 agent.experience(obs_n[i], action_n[i], rew_n[i], new_obs_n[i], done_n[i], terminal)
             obs_n = new_obs_n
 
             for i, rew in enumerate(rew_n):
-                # episode_rewards[-1] += rew
-                agent_rewards[episode_count, i] += rew
+                agent_rewards[episode_count, i] = rew
 
 
             if done or terminal:
@@ -332,7 +332,7 @@ if __name__ == '__main__':
 
 
     else:
-        arglist.save_dir = "./saved_policy/"+str(arglist.num_agents)+"-agent/"+arglist.rsrn_type+"/"+arglist.network+"/"+str(arglist.exp_name)+"/"
+        arglist.save_dir = "./saved_policy/"+str(arglist.num_agents)+"-agent_"+arglist.rsrn_type+"_"+arglist.network+"_"+str(arglist.exp_name)+"/"
         # save all arguments to csv file in a new directory (arglist.save_dir)
         if not os.path.exists(arglist.save_dir):
             os.makedirs(arglist.save_dir)
