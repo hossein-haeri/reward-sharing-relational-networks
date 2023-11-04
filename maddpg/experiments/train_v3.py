@@ -366,7 +366,7 @@ if __name__ == '__main__':
     config.adv_policy = arglist.adv_policy
     config.exp_name = arglist.exp_name
     config.save_rate = arglist.save_rate
-    if arglist.test_model:
+    if arglist.test_mode:
         arglist.network = 'self-interested'
         arglist.rsrn_type = 'WSM'
 
