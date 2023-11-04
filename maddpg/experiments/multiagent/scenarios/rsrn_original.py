@@ -14,7 +14,7 @@ class Scenario(BaseScenario):
         world.agent_limitation = arglist.agent_limitation
         world.network = arglist.network
         world.rsrn_type = arglist.rsrn_type
-
+        world.fixed_agent_location = None
         # add agents
         world.agents = [Agent() for i in range(world.num_landmarks)]
         for i, agent in enumerate(world.agents):
@@ -56,6 +56,9 @@ class Scenario(BaseScenario):
 
         if world.agent_limitation == 'stuck':
             world.agents[-1].max_speed = 0.0
+            if world.fixed_agent_location is None:
+                world.fixed_agent_location = np.random.uniform(-1, +1, world.dim_p)
+            world.agents[-1].state.p_pos = world.fixed_agent_location
 
 
 
@@ -89,6 +92,8 @@ class Scenario(BaseScenario):
             else:
                 landmark.state.p_pos = np.array([r*np.cos((i)*(2*np.pi)/n), r*np.sin((i)*(2*np.pi)/n)])
 
+
+            
 
     def benchmark_data(self, agent, world):
         rew = 0
