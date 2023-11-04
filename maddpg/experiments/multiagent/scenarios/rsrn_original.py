@@ -22,6 +22,7 @@ class Scenario(BaseScenario):
             agent.collide = True
             agent.silent = True
             agent.size = 0.2
+            agent.indiviual_reward = None
 
         # add landmarks
         world.landmarks = [Landmark() for i in range(world.num_agents)]
@@ -62,42 +63,10 @@ class Scenario(BaseScenario):
         RED = [0.84, 0.15, 0.15]
 
         for i, landmark in enumerate(world.landmarks):
-            # if i == 0:
             landmark.color = np.array(BLUE)
-            # if i == 1:
-            #     landmark.color = np.array(RED)
-            # if i == 2:
-            #     landmark.color = np.array(RED)
-            # if i == 3:
-            #     landmark.color = np.array(RED)
-            # if i == 4:
-            #     landmark.color = np.array(RED)
-            # if i == 5:
-            #     landmark.color = np.array(RED)
-            # if i == 6:
-            #     landmark.color = np.array(RED)
-        #
-        # set random initial states
 
         for i, agent in enumerate(world.agents):
-
-
             agent.state.p_pos = np.random.uniform(-1, +1, world.dim_p)
-
-
-            # if agent.name == 'agent 1':
-            #     agent.state.p_pos = np.array([+0.6, +0.6])
-            # if agent.name == 'agent 2':
-            #     agent.state.p_pos = np.array([-0.6, +0.6])
-            # if agent.name == 'agent 3':
-            #     agent.state.p_pos = np.array([-0.6, -0.6])
-            # if agent.name == 'agent 4':
-            #     agent.state.p_pos = np.array([+0.6, -0.6])
-            #
-
-
-
-
             agent.state.p_vel = np.zeros(world.dim_p)
             agent.state.c = np.zeros(world.dim_c)
         for i, landmark in enumerate(world.landmarks):
@@ -119,11 +88,6 @@ class Scenario(BaseScenario):
                 landmark.state.p_pos = np.zeros(world.dim_p)
             else:
                 landmark.state.p_pos = np.array([r*np.cos((i)*(2*np.pi)/n), r*np.sin((i)*(2*np.pi)/n)])
-
-
-
-
-
 
 
     def benchmark_data(self, agent, world):
@@ -250,12 +214,8 @@ class Scenario(BaseScenario):
         other_pos = []
 
         for i, other in enumerate(world.agents):
-
-
             if other is agent: continue
-
             # comm.append(other.state.c)
-
             other_pos.append(other.state.p_pos - agent.state.p_pos)
             # np.random.shuffle(entity_pos)
         # for entity in world.agents:

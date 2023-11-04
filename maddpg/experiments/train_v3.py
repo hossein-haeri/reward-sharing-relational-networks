@@ -50,6 +50,7 @@ def parse_args():
     parser.add_argument("--save-rate", type=int, default=1000, help="save model once every time this many episodes are completed")
     parser.add_argument("--load-dir", type=str, default="./saved_policy/", help="directory in which training state and model are loaded")
     # Evaluation
+    parser.add_argument("--test-mode", action="store_true", default=False)
     parser.add_argument("--restore", action="store_true", default=False)
     parser.add_argument("--display", action="store_true", default=False)
     parser.add_argument("--benchmark", action="store_true", default=False)
@@ -185,7 +186,10 @@ def train(arglist):
         obs_shape_n = [env.observation_space[i].shape for i in range(env.n)]
         num_adversaries = min(env.n, arglist.num_adversaries)
         trainers = get_trainers(env, num_adversaries, obs_shape_n, arglist)
-        print('initiating {}-agent using {} with {} network'.format(arglist.num_agents, arglist.rsrn_type, arglist.network))
+        if arglist.test_mode:
+            print('Tetsing mode...')
+        else:
+            print('initiating {}-agent using {} with {} network'.format(arglist.num_agents, arglist.rsrn_type, arglist.network))
 
         # Initialize
         U.initialize()
@@ -305,19 +309,46 @@ def train(arglist):
 
 if __name__ == '__main__':
     arglist = parse_args()
-    arglist.save_dir = "./saved_policy/"+str(arglist.num_agents)+"-agent/"+arglist.rsrn_type+"/"+arglist.network+"/"+str(arglist.exp_name)+"/"
-    # save all arguments to csv file in a new directory (arglist.save_dir)
-    if not os.path.exists(arglist.save_dir):
-        os.makedirs(arglist.save_dir)
-    with open(arglist.save_dir+'hyperparams.txt', 'w', newline='') as csvfile:
-        filewriter = csv.writer(csvfile, delimiter=':')
-        for key, value in vars(arglist).items():
-            filewriter.writerow([key, value])
+    if arglist.test_mode:
+        # read random_seed from hyperparams.txt
+        with open(arglist.load_dir+'hyperparams.txt', 'r') as f:
+            reader = csv.reader(f, delimiter=':')
+            hyperparams = dict(reader)
+            arglist.num_agents = int(hyperparams['num_agents'])
+            arglist.num_landmarks = int(hyperparams['num_landmarks'])
+            arglist.agent_limitation = hyperparams['agent_limitation']
+            arglist.rsrn_type = hyperparams['rsrn_type']
+            arglist.network = hyperparams['network']
+            arglist.exp_name = hyperparams['exp_name']+"_test"
+            arglist.gamma = float(hyperparams['gamma'])
+            arglist.lr = float(hyperparams['learning_rate'])
+            arglist.num_units = int(hyperparams['num_units'])
+            arglist.batch_size = int(hyperparams['batch_size'])
+            arglist.max_episode_len = int(hyperparams['max_episode_len'])
+
+        arglist.restore = True
+
+
+    else:
+        arglist.save_dir = "./saved_policy/"+str(arglist.num_agents)+"-agent/"+arglist.rsrn_type+"/"+arglist.network+"/"+str(arglist.exp_name)+"/"
+        # save all arguments to csv file in a new directory (arglist.save_dir)
+        if not os.path.exists(arglist.save_dir):
+            os.makedirs(arglist.save_dir)
+        with open(arglist.save_dir+'hyperparams.txt', 'w', newline='') as csvfile:
+            filewriter = csv.writer(csvfile, delimiter=':')
+            for key, value in vars(arglist).items():
+                filewriter.writerow([key, value])
+
     # print(arglist)
 
 
     wandb.init(project='RSRN', entity='haeri-hsn')
     config = wandb.config
+    if arglist.test_mode:
+        config.test_mode = True
+        config.save_dir = arglist.load_dir
+    else:
+        config.test_mode = False
     config.network = arglist.network
     config.num_agents = arglist.num_agents
     config.num_landmarks = arglist.num_landmarks
@@ -333,10 +364,10 @@ if __name__ == '__main__':
     config.good_policy = arglist.good_policy
     config.adv_policy = arglist.adv_policy
     config.exp_name = arglist.exp_name
-    config.save_dir = arglist.save_dir
     config.save_rate = arglist.save_rate
-
-
+    if arglist.test_model:
+        arglist.network = 'self-interested'
+        arglist.rsrn_type = 'WSM'
 
     train(arglist)
     wandb.finish()
