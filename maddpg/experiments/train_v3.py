@@ -314,6 +314,7 @@ if __name__ == '__main__':
         with open(arglist.load_dir+'hyperparams.txt', 'r') as f:
             reader = csv.reader(f, delimiter=':')
             hyperparams = dict(reader)
+            print(hyperparams)
             arglist.num_agents = int(hyperparams['num_agents'])
             arglist.num_landmarks = int(hyperparams['num_landmarks'])
             arglist.agent_limitation = hyperparams['agent_limitation']
