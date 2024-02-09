@@ -37,7 +37,8 @@ Environment Details:
 - Learning Parameters: 
   - Learning Rate: 0.01
   - Batch Size: 2048
-  - Discount Ratio: 0.99
+  - Discount Ratio: 0.95
+  - Episode length: 70 timesteps
 
 Scenario Description:
 
